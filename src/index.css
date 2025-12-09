@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS for Mala Mahanadu Website */
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'system-ui', '-apple-system', 'sans-serif';
+    line-height: 1.6;
+  }
+  
+  /* Prose styles for content */
+  .prose {
+    color: #374151;
+    max-width: none;
+  }
+  
+  .prose h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+  
+  .prose h2 {
+    font-size: 1.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #111827;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prose h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #111827;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .prose p {
+    margin-bottom: 1rem;
+  }
+  
+  .prose ul, .prose ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  
+  .prose li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .prose a {
+    color: #dc2626;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+  
+  .prose a:hover {
+    color: #b91c1c;
+  }
+  
+  .prose strong {
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .prose blockquote {
+    border-left: 4px solid #dc2626;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #6b7280;
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+  
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #dc2626;
+    border-radius: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #b91c1c;
+  }
+}
+
+/* Component styles */
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-6 py-3 rounded-lg transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+  
+  .hero-pattern {
+    background-image: 
+      linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+      linear-gradient(225deg, rgba(220, 38, 38, 0.05) 0%, transparent 50%);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn-primary {
+    @apply border-2 border-black;
+  }
+  
+  .card {
+    @apply border-2 border-gray-900;
+  }
+  
+  .input-field {
+    @apply border-2 border-gray-900;
+  }
+}

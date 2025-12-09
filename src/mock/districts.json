@@ -1,0 +1,130 @@
+[
+  {
+    "id": 1,
+    "name": "Hyderabad",
+    "president": "Bhaindla Srinivas",
+    "phone": "9876543210",
+    "email": "hyderabad@malamahanadu.org",
+    "photo": "/mock images/district-presidents.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Ranga Reddy",
+    "president": "Mohan Reddy",
+    "phone": "9876543211",
+    "email": "rangareddy@malamahanadu.org",
+    "photo": "/mock images/district-presidents1.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Karimnagar",
+    "president": "Rajesh Kumar",
+    "phone": "9876543212",
+    "email": "karimnagar@malamahanadu.org",
+    "photo": "/mock images/district-presidents2.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Khammam",
+    "president": "Sridhar Reddy",
+    "phone": "9876543213",
+    "email": "khammam@malamahanadu.org",
+    "photo": "/mock images/district-presidents3.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Nalgonda",
+    "president": "Venkataiah",
+    "phone": "9876543214",
+    "email": "nalgonda@malamahanadu.org",
+    "photo": "/mock images/district-presidents4.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Medak",
+    "president": "Mahesh Kumar",
+    "phone": "9876543215",
+    "email": "medak@malamahanadu.org",
+    "photo": "/mock images/district-presidents5.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Nizamabad",
+    "president": "Ravinder Reddy",
+    "phone": "9876543216",
+    "email": "nizamabad@malamahanadu.org",
+    "photo": "/mock images/district-presidents6.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Adilabad",
+    "president": "Srinivasulu",
+    "phone": "9876543217",
+    "email": "adilabad@malamahanadu.org",
+    "photo": "/mock images/district-presidents7.jpg"
+  },
+  {
+    "id": 9,
+    "name": "Warangal",
+    "president": "Prakash Reddy",
+    "phone": "9876543218",
+    "email": "warangal@malamahanadu.org",
+    "photo": "/mock images/district-presidents8.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Mahabubnagar",
+    "president": "Krishna Reddy",
+    "phone": "9876543219",
+    "email": "mahabubnagar@malamahanadu.org",
+    "photo": "/mock images/district-presidents9.jpg"
+  },
+  {
+    "id": 11,
+    "name": "Siddipet",
+    "president": "Anjaiah",
+    "phone": "9876543220",
+    "email": "siddipet@malamahanadu.org",
+    "photo": "/mock images/district-presidents10.jpg"
+  },
+  {
+    "id": 12,
+    "name": "Jagtial",
+    "president": "Narsimha Reddy",
+    "phone": "9876543221",
+    "email": "jagtial@malamahanadu.org",
+    "photo": "/mock images/district-presidents11.jpg"
+  },
+  {
+    "id": 13,
+    "name": "Peddapalli",
+    "president": "Madhu Kumar",
+    "phone": "9876543222",
+    "email": "peddapalli@malamahanadu.org",
+    "photo": "/mock images/district-presidents12.jpg"
+  },
+  {
+    "id": 14,
+    "name": "Jayashankar",
+    "president": "Bhaskar Reddy",
+    "phone": "9876543223",
+    "email": "jayashankar@malamahanadu.org",
+    "photo": "/mock images/district-presidents13.jpg"
+  },
+  {
+    "id": 15,
+    "name": "Suryapet",
+    "president": "Ramesh Reddy",
+    "phone": "9876543224",
+    "email": "suryapet@malamahanadu.org",
+    "photo": "/mock images/district-presidents14.jpg"
+  },
+  {
+    "id": 16,
+    "name": "Kamareddy",
+    "president": "Sudarshan Reddy",
+    "phone": "9876543225",
+    "email": "kamareddy@malamahanadu.org",
+    "photo": "/mock images/district-presidents15.jpg"
+  }
+]
