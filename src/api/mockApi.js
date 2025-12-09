@@ -71,7 +71,7 @@ export const getKeyPersons = async () => {
       name: "Chennaiah",
       role: "National President – Mala Mahanadu",
       bio: "Leading the national organization with vision and dedication for community welfare.",
-      photo: "/mock images/chennaiah.jpg",
+      photo: "/mock-images/chennaiah.jpg",
       details: {
         roleAndLeadership: "G. Chennaiah serves as the National President of Mala Mahanadu, a prominent organisation dedicated to the upliftment, rights, and welfare of the Mala (SC) community across Andhra Pradesh and Telangana. He is widely recognised for his strong organisational leadership and commitment to Ambedkarite social justice.",
         advocacyAndPublicWork: "Chennaiah is an active voice in state-level movements and SC community struggles. His work centres on:\n• Protecting SC/ST reservations and constitutional safeguards.\n• Demanding fair implementation of welfare schemes.\n• Promoting education and empowerment of marginalised communities.\n• Mobilising youth, community leaders, and district units.\n• Leading awareness campaigns and solidarity marches across both states",
@@ -84,14 +84,14 @@ export const getKeyPersons = async () => {
       name: "Burugula Venkateswarlu", 
       role: "State President",
       bio: "Leading state-level initiatives and coordinating district activities.",
-      photo: "/mock images/burgula-venkateswarlu.jpg"
+      photo: "/mock-images/burgula-venkateswarlu.jpg"
     },
     {
       id: 3,
       name: "Dr. Ranjith Kumar Manda",
       role: "B.Tech., M.Tech., Ph.D. (JNTUH) Chairman – JNTUH JAC, State General Secretary – Mala Mahanadu",
       bio: "Educational leader and organizational coordinator with extensive academic background.",
-      photo: "/mock images/Manda-Ranjith-Kumar.jpg",
+      photo: "/mock-images/Manda-Ranjith-Kumar.jpg",
       details: {
         earlyLifeAndFamilyBackground: "Dr. Manda Ranjith Kumar was born in Julurupadu village of Bhadradri Kothagudem District, Telangana. He comes from a modest agricultural family and is the son of Sri Manda Pullaiah. Growing up in a rural environment taught him the values of discipline, sincerity and perseverance. These early experiences shaped his character and laid the foundation for his academic excellence and deep sense of social responsibility.",
         primaryAndSecondaryEducation: "He completed his schooling at ZPHS Julurupadu, where he consistently excelled in his studies. His hard work earned him 2nd rank in the Mandal in his 10th Standard, making him one of the top-performing students in the region.",
@@ -112,7 +112,7 @@ export const getKeyPersons = async () => {
       name: "Bhaindla Srinivas",
       role: "Greater Hyderabad President",
       bio: "Leading Hyderabad region initiatives and community development programs.",
-      photo: "/mock images/bhaindla-srinivas.jpg",
+      photo: "/mock-images/bhaindla-srinivas.jpg",
       details: {
         earlyLifeAndBackground: "Bhaindla Srinivas, born on 12 December 1981 in the heart of Hyderabad, is a leader shaped by struggle, compassion, and an unshakable commitment to his community. Rising from humble beginnings, he carries the strength and dignity of the SC Mala community with pride, transforming every challenge into a stepping stone for collective upliftment.",
         educationAndQualifications: "With a B.A. qualification and a life rooted in the values of justice and self-respect, he has dedicated himself to the service of people.",
@@ -127,7 +127,7 @@ export const getKeyPersons = async () => {
       name: "P. Koteswara Rao",
       role: "National Employees Association President",
       bio: "Representing and advocating for employee rights and welfare at national level.",
-      photo: "/mock images/p.koteshwarroa.jpg"
+      photo: "/mock-images/p.koteshwarroa.jpg"
     }
   ];
   

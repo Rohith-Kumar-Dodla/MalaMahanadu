@@ -101,7 +101,7 @@ const Home = () => {
               <div className="bg-white p-6 rounded-lg shadow-md text-center">
                 <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
                   <img
-                    src="/mock images/chennaiah.jpg"
+                    src="/mock-images/chennaiah.jpg"
                     alt="Chennaiah"
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -119,7 +119,7 @@ const Home = () => {
               <div className="bg-white p-6 rounded-lg shadow-md text-center">
                 <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
                   <img
-                    src="/mock images/burgula-venkateswarlu.jpg"
+                    src="/mock-images/burgula-venkateswarlu.jpg"
                     alt="Burugula Venkateswarlu"
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -137,7 +137,7 @@ const Home = () => {
               <div className="bg-white p-6 rounded-lg shadow-md text-center">
                 <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
                   <img
-                    src="/mock images/Manda-Ranjith-Kumar.jpg"
+                    src="/mock-images/Manda-Ranjith-Kumar.jpg"
                     alt="Dr. Manda Ranjith Kumar"
                     className="w-full h-full object-cover"
                     onError={(e) => {

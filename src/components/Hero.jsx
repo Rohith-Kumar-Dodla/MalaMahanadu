@@ -16,7 +16,7 @@ const Hero = ({ title, subtitle, backgroundImage, showCTA = true }) => {
                 {/* Full image container without background */}
                 <div className="relative">
                   <img
-                    src="/mock images/ambedkar-removebg-preview.png"
+                    src="/mock-images/ambedkar-removebg-preview.png"
                     alt="Dr. B.R. Ambedkar"
                     className="w-48 sm:w-56 md:w-64 lg:w-72 xl:w-80 h-auto object-contain rounded"
                     onError={(e) => {

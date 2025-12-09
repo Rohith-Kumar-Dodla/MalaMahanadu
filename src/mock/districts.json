@@ -5,7 +5,7 @@
     "president": "Bhaindla Srinivas",
     "phone": "9876543210",
     "email": "hyderabad@malamahanadu.org",
-    "photo": "/mock images/district-presidents.jpg"
+    "photo": "/mock-images/district-presidents.jpg"
   },
   {
     "id": 2,
@@ -13,7 +13,7 @@
     "president": "Mohan Reddy",
     "phone": "9876543211",
     "email": "rangareddy@malamahanadu.org",
-    "photo": "/mock images/district-presidents1.jpg"
+    "photo": "/mock-images/district-presidents1.jpg"
   },
   {
     "id": 3,
@@ -21,7 +21,7 @@
     "president": "Rajesh Kumar",
     "phone": "9876543212",
     "email": "karimnagar@malamahanadu.org",
-    "photo": "/mock images/district-presidents2.jpg"
+    "photo": "/mock-images/district-presidents2.jpg"
   },
   {
     "id": 4,
@@ -29,7 +29,7 @@
     "president": "Sridhar Reddy",
     "phone": "9876543213",
     "email": "khammam@malamahanadu.org",
-    "photo": "/mock images/district-presidents3.jpg"
+    "photo": "/mock-images/district-presidents3.jpg"
   },
   {
     "id": 5,
@@ -37,7 +37,7 @@
     "president": "Venkataiah",
     "phone": "9876543214",
     "email": "nalgonda@malamahanadu.org",
-    "photo": "/mock images/district-presidents4.jpg"
+    "photo": "/mock-images/district-presidents4.jpg"
   },
   {
     "id": 6,
@@ -45,7 +45,7 @@
     "president": "Mahesh Kumar",
     "phone": "9876543215",
     "email": "medak@malamahanadu.org",
-    "photo": "/mock images/district-presidents5.jpg"
+    "photo": "/mock-images/district-presidents5.jpg"
   },
   {
     "id": 7,
@@ -53,7 +53,7 @@
     "president": "Ravinder Reddy",
     "phone": "9876543216",
     "email": "nizamabad@malamahanadu.org",
-    "photo": "/mock images/district-presidents6.jpg"
+    "photo": "/mock-images/district-presidents6.jpg"
   },
   {
     "id": 8,
@@ -61,7 +61,7 @@
     "president": "Srinivasulu",
     "phone": "9876543217",
     "email": "adilabad@malamahanadu.org",
-    "photo": "/mock images/district-presidents7.jpg"
+    "photo": "/mock-images/district-presidents7.jpg"
   },
   {
     "id": 9,
@@ -69,7 +69,7 @@
     "president": "Prakash Reddy",
     "phone": "9876543218",
     "email": "warangal@malamahanadu.org",
-    "photo": "/mock images/district-presidents8.jpg"
+    "photo": "/mock-images/district-presidents8.jpg"
   },
   {
     "id": 10,
@@ -77,7 +77,7 @@
     "president": "Krishna Reddy",
     "phone": "9876543219",
     "email": "mahabubnagar@malamahanadu.org",
-    "photo": "/mock images/district-presidents9.jpg"
+    "photo": "/mock-images/district-presidents9.jpg"
   },
   {
     "id": 11,
@@ -85,7 +85,7 @@
     "president": "Anjaiah",
     "phone": "9876543220",
     "email": "siddipet@malamahanadu.org",
-    "photo": "/mock images/district-presidents10.jpg"
+    "photo": "/mock-images/district-presidents10.jpg"
   },
   {
     "id": 12,
@@ -93,7 +93,7 @@
     "president": "Narsimha Reddy",
     "phone": "9876543221",
     "email": "jagtial@malamahanadu.org",
-    "photo": "/mock images/district-presidents11.jpg"
+    "photo": "/mock-images/district-presidents11.jpg"
   },
   {
     "id": 13,
@@ -101,7 +101,7 @@
     "president": "Madhu Kumar",
     "phone": "9876543222",
     "email": "peddapalli@malamahanadu.org",
-    "photo": "/mock images/district-presidents12.jpg"
+    "photo": "/mock-images/district-presidents12.jpg"
   },
   {
     "id": 14,
@@ -109,7 +109,7 @@
     "president": "Bhaskar Reddy",
     "phone": "9876543223",
     "email": "jayashankar@malamahanadu.org",
-    "photo": "/mock images/district-presidents13.jpg"
+    "photo": "/mock-images/district-presidents13.jpg"
   },
   {
     "id": 15,
@@ -117,7 +117,7 @@
     "president": "Ramesh Reddy",
     "phone": "9876543224",
     "email": "suryapet@malamahanadu.org",
-    "photo": "/mock images/district-presidents14.jpg"
+    "photo": "/mock-images/district-presidents14.jpg"
   },
   {
     "id": 16,
@@ -125,6 +125,6 @@
     "president": "Sudarshan Reddy",
     "phone": "9876543225",
     "email": "kamareddy@malamahanadu.org",
-    "photo": "/mock images/district-presidents15.jpg"
+    "photo": "/mock-images/district-presidents15.jpg"
   }
 ]
