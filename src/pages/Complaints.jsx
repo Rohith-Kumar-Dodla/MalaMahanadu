@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaExclamationTriangle, FaFileUpload, FaCheckCircle, FaSpinner, FaUser, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import SeoHead from '../components/SeoHead';
-import { submitComplaint } from '../api/mockApi';
+import { createComplaint } from '../api/api';
 
 const Complaints = () => {
   const [formData, setFormData] = useState({
@@ -155,56 +155,34 @@ const Complaints = () => {
     setSubmitStatus(null);
     
     try {
-      // Create FormData object for file upload
-      const submissionData = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (key !== 'file') {
-          submissionData.append(key, formData[key]);
-        }
+      const submissionData = {
+        ...formData,
+        file: formData.file
+      };
+      
+      const response = await createComplaint(submissionData);
+      
+      setSubmitStatus({
+        type: 'success',
+        message: `Your complaint has been submitted successfully! We will review it and get back to you soon. Reference ID: ${response.reference_id}`
       });
-      
-      if (formData.file) {
-        submissionData.append('file', formData.file);
-        submissionData.append('file_name', formData.file.name);
-        submissionData.append('file_type', formData.file.type);
-      }
-      
-      // Convert to regular object for mock API
-      const dataForApi = {};
-      submissionData.forEach((value, key) => {
-        dataForApi[key] = value;
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        complaint_type: '',
+        subject: '',
+        description: '',
+        file: null
       });
-      
-      const response = await submitComplaint(dataForApi);
-      
-      if (response.success) {
-        setSubmitStatus({
-          type: 'success',
-          message: 'Your complaint has been submitted successfully! We will review it and get back to you soon. Reference ID: #' + Date.now()
-        });
-        // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          address: '',
-          complaint_type: '',
-          subject: '',
-          description: '',
-          file: null
-        });
-        setFilePreview(null);
-        document.getElementById('file-upload').value = '';
-      } else {
-        setSubmitStatus({
-          type: 'error',
-          message: 'Failed to submit complaint. Please try again later.'
-        });
-      }
+      setFilePreview(null);
+      document.getElementById('file-upload').value = '';
     } catch (error) {
       setSubmitStatus({
         type: 'error',
-        message: 'An error occurred. Please try again later.'
+        message: error.message || 'An error occurred. Please try again later.'
       });
       console.error('Error submitting complaint:', error);
     } finally {

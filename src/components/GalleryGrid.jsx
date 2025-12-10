@@ -26,9 +26,15 @@ const GalleryGrid = ({ items }) => {
               {item.type === 'video' ? (
                 <div className="relative w-full h-full">
                   <img
-                    src={`https://img.youtube.com/vi/${item.url.split('/embed/')[1]}/mqdefault.jpg`}
+                    src={item.url.includes('/embed/') 
+                      ? `https://img.youtube.com/vi/${item.url.split('/embed/')[1]}/mqdefault.jpg`
+                      : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMTRweDsgZmlsbDogIzlDQTNBRjsiPlZpZGVvPC90ZXh0Pgo8L3N2Zz4K'
+                    }
                     alt={item.caption}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMTRweDsgZmlsbDogIzlDQTNBRjsiPlZpZGVvPC90ZXh0Pgo8L3N2Zz4K';
+                    }}
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                     <div className="bg-primary-600 rounded-full p-3 sm:p-4 group-hover:scale-110 transition-transform duration-200">

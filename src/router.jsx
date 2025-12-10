@@ -11,6 +11,14 @@ import Complaints from './pages/Complaints';
 import Contact from './pages/Contact';
 import Donations from './pages/Donations';
 import Membership from './pages/Membership';
+import MembershipSuccess from './pages/MembershipSuccess';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminLayout from './components/AdminLayout';
+import MemberDashboard from './pages/admin/MemberDashboard';
+import MemberDetails from './pages/admin/MemberDetails';
+import DonationsManagement from './pages/admin/DonationsManagement';
+import ComplaintsManagement from './pages/admin/ComplaintsManagement';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import NotFound from './pages/NotFound';
@@ -65,6 +73,10 @@ const router = createBrowserRouter([
         element: <Membership />
       },
       {
+        path: 'membership-success',
+        element: <MembershipSuccess />
+      },
+      {
         path: 'privacy-policy',
         element: <PrivacyPolicy />
       },
@@ -75,6 +87,40 @@ const router = createBrowserRouter([
       {
         path: '*',
         element: <NotFound />
+      }
+    ]
+  },
+  {
+    path: '/admin/login',
+    element: <AdminLogin />
+  },
+  {
+    path: '/admin',
+    element: <AdminLayout />,
+    children: [
+      {
+        index: true,
+        element: <AdminDashboard />
+      },
+      {
+        path: 'dashboard',
+        element: <AdminDashboard />
+      },
+      {
+        path: 'members',
+        element: <MemberDashboard />
+      },
+      {
+        path: 'members/:id',
+        element: <MemberDetails />
+      },
+      {
+        path: 'donations',
+        element: <DonationsManagement />
+      },
+      {
+        path: 'complaints',
+        element: <ComplaintsManagement />
       }
     ]
   }

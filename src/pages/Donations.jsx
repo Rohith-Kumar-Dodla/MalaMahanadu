@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FaHandHoldingHeart, FaUniversity, FaCreditCard, FaCheckCircle, FaSpinner, FaInfoCircle, FaPhone, FaEnvelope } from 'react-icons/fa';
 import SeoHead from '../components/SeoHead';
-import { getSettings, recordDonation } from '../api/mockApi';
+import { getSettings } from '../api/mockApi';
+import { createDonation } from '../api/api';
 
 const Donations = () => {
   const [settings, setSettings] = useState(null);
@@ -122,34 +123,27 @@ const Donations = () => {
         status: 'pending'
       };
       
-      const response = await recordDonation(donationData);
+      const response = await createDonation(donationData);
       
-      if (response.success) {
-        setSubmitStatus({
-          type: 'success',
-          message: 'Thank you for your donation! We will acknowledge it shortly.'
-        });
-        setShowAcknowledgment(true);
-        // Reset form
-        setDonationForm({
-          name: '',
-          email: '',
-          phone: '',
-          amount: '',
-          payment_method: '',
-          transaction_id: '',
-          notes: ''
-        });
-      } else {
-        setSubmitStatus({
-          type: 'error',
-          message: 'Failed to record donation. Please try again later.'
-        });
-      }
+      setSubmitStatus({
+        type: 'success',
+        message: 'Thank you for your donation! We will acknowledge it shortly.'
+      });
+      setShowAcknowledgment(true);
+      // Reset form
+      setDonationForm({
+        name: '',
+        email: '',
+        phone: '',
+        amount: '',
+        payment_method: '',
+        transaction_id: '',
+        notes: ''
+      });
     } catch (error) {
       setSubmitStatus({
         type: 'error',
-        message: 'An error occurred. Please try again later.'
+        message: error.message || 'An error occurred. Please try again later.'
       });
       console.error('Error recording donation:', error);
     } finally {

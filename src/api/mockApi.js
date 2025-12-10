@@ -19,6 +19,14 @@ export const getSettings = async () => {
   return { success: true, data: settingsData };
 };
 
+// Member Stats
+export const getMemberStats = async () => {
+  await randomDelay();
+  // This will eventually fetch from real API
+  // For now, return null to show 0 until API is implemented
+  return null;
+};
+
 // Posts
 export const getPosts = async ({ page = 1, per = 6 } = {}) => {
   await randomDelay();

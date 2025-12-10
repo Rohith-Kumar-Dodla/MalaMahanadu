@@ -8,7 +8,37 @@ const KeyPersons = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPerson, setSelectedPerson] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
+  useEffect(() => {
+    // Check if mobile device
+    const checkMobile = () => {
+      const wasMobile = isMobile;
+      const nowMobile = window.innerWidth < 768;
+      setIsMobile(nowMobile);
+      
+      // Cleanup wrapper when switching from mobile to desktop
+      if (wasMobile && !nowMobile) {
+        const scrollWrapper = document.querySelector('[data-scroll-wrapper]');
+        if (scrollWrapper) {
+          const keyPersonsSection = scrollWrapper.querySelector('[data-key-persons-section]');
+          if (keyPersonsSection) {
+            // Move the key persons section back to its original position
+            scrollWrapper.parentNode.insertBefore(keyPersonsSection, scrollWrapper);
+          }
+          // Remove the wrapper
+          scrollWrapper.remove();
+        }
+      }
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [isMobile]);
+
+  
   useEffect(() => {
     const fetchKeyPersons = async () => {
       try {

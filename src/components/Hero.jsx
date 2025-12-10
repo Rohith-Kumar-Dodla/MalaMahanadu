@@ -70,7 +70,7 @@ const Hero = ({ title, subtitle, backgroundImage, showCTA = true }) => {
       {/* Decorative bottom wave */}
       <div className="absolute bottom-0 left-0 right-0">
         <svg 
-          className="w-full h-12 md:h-16" 
+          className="w-full h-16" 
           viewBox="0 0 1440 120" 
           fill="none" 
           xmlns="http://www.w3.org/2000/svg"

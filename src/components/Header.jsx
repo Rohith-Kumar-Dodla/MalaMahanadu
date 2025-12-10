@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaBars, FaTimes, FaHome, FaInfoCircle, FaUsers, FaMapMarkerAlt, FaImages, FaNewspaper, FaPhone, FaExclamationTriangle, FaHandHoldingHeart, FaFacebook, FaTwitter, FaInstagram, FaUserFriends } from 'react-icons/fa';
+import { FaBars, FaTimes, FaHome, FaInfoCircle, FaUsers, FaMapMarkerAlt, FaImages, FaNewspaper, FaPhone, FaExclamationTriangle, FaHandHoldingHeart, FaFacebook, FaTwitter, FaInstagram, FaUserFriends, FaUserShield } from 'react-icons/fa';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +15,7 @@ const Header = () => {
     { name: 'Complaints', href: '/complaints', icon: FaExclamationTriangle },
     { name: 'Gallery', href: '/gallery', icon: FaImages },
     { name: 'Membership', href: '/membership', icon: FaUserFriends },
+    { name: 'Admin Login', href: '/admin/login', icon: FaUserShield },
   ];
 
   const isActive = (path) => location.pathname === path;
