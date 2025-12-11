@@ -311,54 +311,54 @@ const MemberDashboard = () => {
       <div className="min-h-screen bg-accent-50">
         {/* Header */}
         <div className="bg-primary-900 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 sm:py-6 gap-4">
+          <div className="max-w-7xl mx-auto px-4 xs:px-6 sm:px-6 lg:px-8">
+            <div className="flex flex-col xs:flex-row sm:flex-row justify-between items-center py-3 xs:py-4 sm:py-4 sm:py-6 gap-3 xs:gap-4">
               <div className="flex items-center">
-                <FaUsers className="h-6 w-6 sm:h-8 sm:w-8 text-gold-500 mr-3" />
-                <h1 className="text-xl sm:text-2xl font-bold text-white">Member Dashboard</h1>
+                <FaUsers className="h-5 w-5 xs:h-6 xs:w-6 sm:h-6 sm:w-8 lg:h-8 lg:w-8 text-gold-500 mr-2 xs:mr-3" />
+                <h1 className="text-lg xs:text-xl sm:text-xl sm:text-2xl font-bold text-white">Member Dashboard</h1>
               </div>
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 xs:px-6 sm:px-6 lg:px-8 py-6 xs:py-8">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 xs:gap-4 sm:gap-4 sm:gap-6 mb-4 xs:mb-6 sm:mb-6 sm:mb-8">
+            <div className="bg-white rounded-lg shadow border border-gray-200 p-3 xs:p-4 sm:p-4 sm:p-6">
               <div className="flex items-center">
-                <div className="p-2 sm:p-3 bg-gold-100 rounded-full">
-                  <FaUsers className="h-5 w-5 sm:h-6 sm:w-6 text-gold-500" />
+                <div className="p-2 xs:p-2 sm:p-2 sm:p-3 bg-gold-100 rounded-full">
+                  <FaUsers className="h-4 w-4 xs:h-4 xs:w-5 sm:h-5 sm:w-5 sm:h-6 sm:w-6 text-gold-500" />
                 </div>
-                <div className="ml-3 sm:ml-4">
-                  <p className="text-xs sm:text-sm text-gray-600">Total Members</p>
-                  <p className="text-xl sm:text-2xl font-bold text-primary-900">{members.length}</p>
+                <div className="ml-2 xs:ml-3 sm:ml-3 sm:ml-4">
+                  <p className="text-xs xs:text-xs sm:text-xs sm:text-sm text-gray-600">Total Members</p>
+                  <p className="text-lg xs:text-xl sm:text-xl sm:text-2xl font-bold text-primary-900">{members.length}</p>
                 </div>
               </div>
             </div>
             
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+            <div className="bg-white rounded-lg shadow border border-gray-200 p-3 xs:p-4 sm:p-4 sm:p-6">
               <div className="flex items-center">
-                <div className="p-2 sm:p-3 bg-green-100 rounded-full">
-                  <FaIdCard className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
+                <div className="p-2 xs:p-2 sm:p-2 sm:p-3 bg-green-100 rounded-full">
+                  <FaIdCard className="h-4 w-4 xs:h-4 xs:w-5 sm:h-5 sm:w-5 sm:h-6 sm:w-6 text-green-500" />
                 </div>
-                <div className="ml-3 sm:ml-4">
-                  <p className="text-xs sm:text-sm text-gray-600">Approved Members</p>
-                  <p className="text-xl sm:text-2xl font-bold text-primary-900">
+                <div className="ml-2 xs:ml-3 sm:ml-3 sm:ml-4">
+                  <p className="text-xs xs:text-xs sm:text-xs sm:text-sm text-gray-600">Approved Members</p>
+                  <p className="text-lg xs:text-xl sm:text-xl sm:text-2xl font-bold text-primary-900">
                     {members.filter(m => m.status === 'approved').length}
                   </p>
                 </div>
               </div>
             </div>
             
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+            <div className="bg-white rounded-lg shadow border border-gray-200 p-3 xs:p-4 sm:p-4 sm:p-6">
               <div className="flex items-center">
-                <div className="p-2 sm:p-3 bg-yellow-100 rounded-full">
-                  <FaEnvelope className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500" />
+                <div className="p-2 xs:p-2 sm:p-2 sm:p-3 bg-yellow-100 rounded-full">
+                  <FaEnvelope className="h-4 w-4 xs:h-4 xs:w-5 sm:h-5 sm:w-5 sm:h-6 sm:w-6 text-yellow-500" />
                 </div>
-                <div className="ml-3 sm:ml-4">
-                  <p className="text-xs sm:text-sm text-gray-600">Pending Members</p>
-                  <p className="text-xl sm:text-2xl font-bold text-primary-900">
+                <div className="ml-2 xs:ml-3 sm:ml-3 sm:ml-4">
+                  <p className="text-xs xs:text-xs sm:text-xs sm:text-sm text-gray-600">Pending Members</p>
+                  <p className="text-lg xs:text-xl sm:text-xl sm:text-2xl font-bold text-primary-900">
                     {members.filter(m => m.status === 'pending').length}
                   </p>
                 </div>
@@ -367,27 +367,27 @@ const MemberDashboard = () => {
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
-            <div className="flex flex-col gap-4">
+          <div className="bg-white rounded-lg shadow border border-gray-200 p-3 xs:p-4 sm:p-4 sm:p-6 mb-4 xs:mb-6 sm:mb-6 sm:mb-8">
+            <div className="flex flex-col gap-3 xs:gap-4">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaSearch className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                  <FaSearch className="h-3 w-3 xs:h-4 xs:w-4 sm:h-4 sm:w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
                   placeholder="Search by name, ID, phone, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="block w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+                  className="block w-full pl-8 xs:pl-9 sm:pl-9 sm:pl-10 pr-2 xs:pr-3 sm:pr-3 sm:pr-4 py-2 xs:py-2 sm:py-2 sm:py-3 text-xs xs:text-sm sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                 />
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <div className="flex-1 sm:flex-none">
+              <div className="flex flex-col xs:flex-col sm:flex-col sm:flex-row gap-2 xs:gap-3 sm:gap-3 sm:gap-4">
+                <div className="flex-1 xs:flex-1 sm:flex-1 sm:flex-none">
                   <select
                     value={filterState}
                     onChange={(e) => setFilterState(e.target.value)}
-                    className="block w-full sm:w-auto px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent min-w-32"
+                    className="block w-full xs:w-full sm:w-full sm:w-auto px-2 xs:px-3 sm:px-3 sm:px-4 py-2 text-xs xs:text-sm sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent min-w-24 xs:min-w-28 sm:min-w-32"
                   >
                     <option value="">All States</option>
                     <option value="Telangana">Telangana</option>
@@ -400,7 +400,7 @@ const MemberDashboard = () => {
                   <button
                     type="submit"
                     onClick={handleSearch}
-                    className="flex-1 sm:flex-none bg-gold-500 hover:bg-gold-600 text-primary-900 font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors text-sm"
+                    className="flex-1 xs:flex-1 sm:flex-1 sm:flex-none bg-gold-500 hover:bg-gold-600 text-primary-900 font-medium py-2 px-2 xs:px-3 sm:px-3 sm:px-4 rounded-lg transition-colors text-xs xs:text-sm sm:text-sm"
                   >
                     Search
                   </button>
@@ -411,7 +411,7 @@ const MemberDashboard = () => {
                       setFilterState('');
                       setCurrentPage(1);
                     }}
-                    className="px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-2 xs:px-3 sm:px-3 sm:px-4 py-2 text-xs xs:text-sm sm:text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     Clear
                   </button>
@@ -419,12 +419,12 @@ const MemberDashboard = () => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-2">
+            <div className="flex flex-col xs:flex-col sm:flex-col sm:flex-row justify-between items-center mt-3 xs:mt-4 gap-2">
               <button
                 onClick={handleExportCSV}
-                className="flex items-center text-primary-900 hover:text-gold-600 transition-colors"
+                className="flex items-center text-primary-900 hover:text-gold-600 transition-colors text-xs xs:text-sm sm:text-sm"
               >
-                <FaDownload className="mr-2" />
+                <FaDownload className="mr-2 h-3 w-3 xs:h-4 xs:w-4 sm:h-4 sm:w-4" />
                 Export CSV
               </button>
             </div>
@@ -538,16 +538,16 @@ const MemberDashboard = () => {
                 </div>
 
                 {/* Mobile Card View */}
-                <div className="lg:hidden space-y-4 p-4">
+                <div className="lg:hidden space-y-3 xs:space-y-4 p-3 xs:p-4">
                   {filteredMembers.map((member) => (
-                    <div key={member.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                      <div className="flex justify-between items-start mb-3">
+                    <div key={member.id} className="bg-white border border-gray-200 rounded-lg p-3 xs:p-4 shadow-sm">
+                      <div className="flex justify-between items-start mb-2 xs:mb-3">
                         <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-900">{member.name}</h3>
+                          <h3 className="text-xs xs:text-sm font-semibold text-gray-900">{member.name}</h3>
                           <p className="text-xs text-gray-500">{member.father_name}</p>
                           <p className="text-xs font-mono text-primary-600 mt-1">{member.membership_id}</p>
                         </div>
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        <span className={`inline-flex items-center px-1 xs:px-2 py-1 rounded-full text-xs font-medium ${
                           member.status === 'approved' ? 'bg-green-100 text-green-800' :
                           member.status === 'rejected' ? 'bg-red-100 text-red-800' :
                           'bg-yellow-100 text-yellow-800'
@@ -556,49 +556,49 @@ const MemberDashboard = () => {
                         </span>
                       </div>
                       
-                      <div className="space-y-2 text-sm">
+                      <div className="space-y-1 xs:space-y-2 text-xs">
                         <div className="flex items-center">
-                          <span className="text-gray-500 w-16">Phone:</span>
+                          <span className="text-gray-500 w-12 xs:w-16">Phone:</span>
                           <span className="text-gray-900">{member.phone}</span>
                         </div>
                         <div className="flex items-start">
-                          <span className="text-gray-500 w-16 flex-shrink-0">Email:</span>
+                          <span className="text-gray-500 w-12 xs:w-16 flex-shrink-0">Email:</span>
                           <span className="text-gray-900 text-xs break-all ml-2">{member.email}</span>
                         </div>
                         <div className="flex items-start">
-                          <span className="text-gray-500 w-16">Location:</span>
+                          <span className="text-gray-500 w-12 xs:w-16">Location:</span>
                           <span className="text-gray-900 text-xs">
                             {member.village}, {member.district}, {member.state}
                           </span>
                         </div>
                         <div className="flex items-center">
-                          <span className="text-gray-500 w-16">Joined:</span>
+                          <span className="text-gray-500 w-12 xs:w-16">Joined:</span>
                           <span className="text-gray-900 text-xs">
                             {new Date(member.created_at).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
                       
-                      <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
-                        <div className="flex space-x-2">
+                      <div className="flex justify-between items-center mt-3 xs:mt-4 pt-2 xs:pt-3 border-t border-gray-100">
+                        <div className="flex space-x-1 xs:space-x-2">
                           <button
                             onClick={() => handleMemberStatusUpdate(member.id, 'approved')}
-                            className="text-green-600 hover:text-green-900 p-2"
+                            className="text-green-600 hover:text-green-900 p-1 xs:p-2"
                             title="Approve Member"
                           >
-                            <FaCheck className="w-4 h-4" />
+                            <FaCheck className="w-3 h-3 xs:w-4 xs:h-4" />
                           </button>
                           <button
                             onClick={() => handleMemberStatusUpdate(member.id, 'rejected')}
-                            className="text-red-600 hover:text-red-900 p-2"
+                            className="text-red-600 hover:text-red-900 p-1 xs:p-2"
                             title="Reject Member"
                           >
-                            <FaTimes className="w-4 h-4" />
+                            <FaTimes className="w-3 h-3 xs:w-4 xs:h-4" />
                           </button>
                         </div>
                         <button
                           onClick={() => handleViewMember(member.id)}
-                          className="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded text-xs font-medium"
+                          className="bg-primary-600 hover:bg-primary-700 text-white px-2 xs:px-3 py-1 xs:py-2 rounded text-xs font-medium"
                         >
                           View Details
                         </button>
@@ -615,26 +615,26 @@ const MemberDashboard = () => {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                  <div className="bg-gray-50 px-3 xs:px-4 py-2 xs:py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
                     <div className="flex-1 flex justify-between sm:hidden">
                       <button
                         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
-                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="relative inline-flex items-center px-3 xs:px-4 py-2 border border-gray-300 text-xs xs:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                       >
                         Previous
                       </button>
                       <button
                         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
-                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="ml-3 relative inline-flex items-center px-3 xs:px-4 py-2 border border-gray-300 text-xs xs:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                       >
                         Next
                       </button>
                     </div>
                     <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                       <div>
-                        <p className="text-sm text-gray-700">
+                        <p className="text-xs xs:text-sm text-gray-700">
                           Page <span className="font-medium">{currentPage}</span> of{' '}
                           <span className="font-medium">{totalPages}</span>
                         </p>
@@ -644,7 +644,7 @@ const MemberDashboard = () => {
                           <button
                             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                             disabled={currentPage === 1}
-                            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-xs xs:text-sm font-medium text-gray-500 hover:bg-gray-50"
                           >
                             Previous
                           </button>
@@ -652,7 +652,7 @@ const MemberDashboard = () => {
                             <button
                               key={i + 1}
                               onClick={() => setCurrentPage(i + 1)}
-                              className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                              className={`relative inline-flex items-center px-3 xs:px-4 py-2 border text-xs xs:text-sm font-medium ${
                                 currentPage === i + 1
                                   ? 'z-10 bg-gold-500 border-gold-500 text-primary-900'
                                   : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
@@ -664,7 +664,7 @@ const MemberDashboard = () => {
                           <button
                             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                             disabled={currentPage === totalPages}
-                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-xs xs:text-sm font-medium text-gray-500 hover:bg-gray-50"
                           >
                             Next
                           </button>
@@ -681,48 +681,48 @@ const MemberDashboard = () => {
         {/* Member Details Modal */}
         {selectedMember && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-4/5 shadow-lg rounded-md bg-white">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-gray-900">Member Details & ID Card</h3>
+            <div className="relative top-10 xs:top-20 mx-auto p-3 xs:p-5 border w-11/12 xs:w-11/12 md:w-3/4 lg:w-4/5 shadow-lg rounded-md bg-white">
+              <div className="flex justify-between items-center mb-3 xs:mb-4">
+                <h3 className="text-base xs:text-lg font-bold text-gray-900">Member Details & ID Card</h3>
                 <button
                   onClick={() => setSelectedMember(null)}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  <FaTimes className="w-6 h-6" />
+                  <FaTimes className="w-4 h-4 xs:w-6 xs:h-6" />
                 </button>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 xs:grid-cols-1 lg:grid-cols-2 gap-4 xs:gap-6">
                 {/* Member Information */}
-                <div className="space-y-4">
-                  <h4 className="text-md font-semibold text-gray-800">Personal Information</h4>
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-3 xs:space-y-4">
+                  <h4 className="text-sm xs:text-md font-semibold text-gray-800">Personal Information</h4>
+                  <div className="grid grid-cols-2 gap-2 xs:gap-4">
                     <div>
-                      <p className="text-sm text-gray-600">Name</p>
-                      <p className="font-medium">{selectedMember.name}</p>
+                      <p className="text-xs xs:text-sm text-gray-600">Name</p>
+                      <p className="font-medium text-xs xs:text-sm">{selectedMember.name}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Membership ID</p>
-                      <p className="font-medium font-mono">{selectedMember.membership_id}</p>
+                      <p className="text-xs xs:text-sm text-gray-600">Membership ID</p>
+                      <p className="font-medium font-mono text-xs xs:text-sm">{selectedMember.membership_id}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Father Name</p>
-                      <p className="font-medium">{selectedMember.father_name}</p>
+                      <p className="text-xs xs:text-sm text-gray-600">Father Name</p>
+                      <p className="font-medium text-xs xs:text-sm">{selectedMember.father_name}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Gender</p>
-                      <p className="font-medium">{selectedMember.gender}</p>
+                      <p className="text-xs xs:text-sm text-gray-600">Gender</p>
+                      <p className="font-medium text-xs xs:text-sm">{selectedMember.gender}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Phone</p>
-                      <p className="font-medium">{selectedMember.phone}</p>
+                      <p className="text-xs xs:text-sm text-gray-600">Phone</p>
+                      <p className="font-medium text-xs xs:text-sm">{selectedMember.phone}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Email</p>
-                      <p className="font-medium text-xs break-all">{selectedMember.email}</p>
+                      <p className="text-xs xs:text-sm text-gray-600">Email</p>
+                      <p className="font-medium text-xs xs:text-sm break-all">{selectedMember.email}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Village</p>
+                      <p className="text-xs xs:text-sm text-gray-600">Village</p>
                       <p className="font-medium">{selectedMember.village}</p>
                     </div>
                     <div>
