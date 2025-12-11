@@ -48,12 +48,22 @@ const MemberDashboard = () => {
     } catch (error) {
       console.error('Error fetching members:', error);
       
-      // Show error message instead of mock data
-      setMembers([]);
-      setTotalPages(0);
-      
-      // You could show a toast notification here
-      alert('Failed to load members from server. Please check your connection and try again.');
+      // If backend is not available, try to load from localStorage
+      if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+        const storedMembers = localStorage.getItem('membersData');
+        if (storedMembers) {
+          const parsedMembers = JSON.parse(storedMembers);
+          setMembers(parsedMembers);
+          setTotalPages(Math.ceil(parsedMembers.length / 10));
+        } else {
+          setMembers([]);
+          setTotalPages(0);
+        }
+      } else {
+        setMembers([]);
+        setTotalPages(0);
+        alert('Failed to load members from server. Please check your connection and try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -175,14 +185,77 @@ const MemberDashboard = () => {
       
     } catch (error) {
       console.error('Error updating member status:', error);
-      alert(`Failed to ${status} member. Please try again.`);
       
-      // Revert the status change on error
-      setMembers(prevMembers => 
-        prevMembers.map(member => 
-          member.id === memberId ? { ...member, status: originalStatus } : member
-        )
-      );
+      // If backend is not available, store in localStorage for persistence
+      if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+        // Store updated status in localStorage
+        const updatedMembers = members.map(member => 
+          member.id === memberId ? { ...member, status } : member
+        );
+        localStorage.setItem('membersData', JSON.stringify(updatedMembers));
+        alert(`Member ${status} successfully! (Saved locally)`);
+      } else {
+        alert(`Failed to ${status} member. Please try again.`);
+        
+        // Revert the status change on error
+        setMembers(prevMembers => 
+          prevMembers.map(member => 
+            member.id === memberId ? { ...member, status: originalStatus } : member
+          )
+        );
+      }
+    }
+  };
+
+  const handleDownloadIDCard = async (memberId, format) => {
+    try {
+      // Create ID card element for download
+      const idCardElement = document.getElementById(`id-card-${memberId}`);
+      if (!idCardElement) {
+        alert('ID Card not found');
+        return;
+      }
+
+      if (format === 'png') {
+        // Use html2canvas library to convert to PNG
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(idCardElement, {
+          scale: 2,
+          backgroundColor: '#ffffff'
+        });
+        
+        // Convert to blob and download
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ID-Card-${memberId}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      } else if (format === 'pdf') {
+        // Use jsPDF library to convert to PDF
+        const jsPDF = (await import('jspdf')).default;
+        const html2canvas = (await import('html2canvas')).default;
+        
+        const canvas = await html2canvas(idCardElement, {
+          scale: 2,
+          backgroundColor: '#ffffff'
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('L', 'mm', [85.6, 53.98]); // Credit card size
+        const imgWidth = 85.6;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        pdf.save(`ID-Card-${memberId}.pdf`);
+      }
+    } catch (error) {
+      console.error('Error downloading ID card:', error);
+      alert('Failed to download ID card. Please try again.');
     }
   };
 
@@ -657,10 +730,16 @@ const MemberDashboard = () => {
                         </button>
                         <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                           <div className="py-1">
-                            <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <button 
+                              onClick={() => handleDownloadIDCard(selectedMember.id, 'png')}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
                               Download as PNG
                             </button>
-                            <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <button 
+                              onClick={() => handleDownloadIDCard(selectedMember.id, 'pdf')}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
                               Download as PDF
                             </button>
                           </div>
@@ -675,7 +754,7 @@ const MemberDashboard = () => {
                   <h4 className="text-md font-semibold text-gray-800 mb-3">ID Card Preview</h4>
                   <div className="border-2 border-gray-300 rounded-lg p-4 bg-gradient-to-br from-blue-50 to-blue-100">
                     {/* ID Card Design */}
-                    <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div id={`id-card-${selectedMember.id}`} className="bg-white rounded-lg shadow-lg p-6">
                       <div className="text-center border-b-2 border-blue-600 pb-4 mb-4">
                         <h2 className="text-xl font-bold text-blue-900">Mala Mahanadu</h2>
                         <p className="text-sm text-gray-600">Membership Card</p>
@@ -683,9 +762,9 @@ const MemberDashboard = () => {
                       
                       <div className="flex items-center space-x-4 mb-4">
                         <div className="relative">
-                          {selectedMember.photo_url && selectedMember.photo_url !== '/static/photos/photo_001.jpg' && selectedMember.photo_url !== '/static/photos/photo_002.jpg' ? (
+                          {selectedMember.photo_url && !selectedMember.photo_url.includes('photo_001.jpg') && !selectedMember.photo_url.includes('photo_002.jpg') ? (
                             <img 
-                              src={selectedMember.photo_url} 
+                              src={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedMember.photo_url}`} 
                               alt={selectedMember.name}
                               className="w-20 h-20 rounded-full object-cover border-2 border-blue-600"
                               onError={(e) => {
@@ -694,7 +773,7 @@ const MemberDashboard = () => {
                               }}
                             />
                           ) : null}
-                          <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center" style={{ display: (selectedMember.photo_url && selectedMember.photo_url !== '/static/photos/photo_001.jpg' && selectedMember.photo_url !== '/static/photos/photo_002.jpg') ? 'none' : 'flex' }}>
+                          <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center" style={{ display: (selectedMember.photo_url && !selectedMember.photo_url.includes('photo_001.jpg') && !selectedMember.photo_url.includes('photo_002.jpg')) ? 'none' : 'flex' }}>
                             <FaUsers className="w-10 h-10 text-gray-600" />
                           </div>
                         </div>
