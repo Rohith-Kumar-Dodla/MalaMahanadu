@@ -33,71 +33,27 @@ const MemberDashboard = () => {
   const fetchMembers = async () => {
     setLoading(true);
     try {
-      // First try to load from localStorage (for mock persistence)
-      const storedMembers = localStorage.getItem('membersData');
-      if (storedMembers) {
-        const parsedMembers = JSON.parse(storedMembers);
-        setMembers(parsedMembers);
-        setTotalPages(Math.ceil(parsedMembers.length / 10));
-        setLoading(false);
-        return;
-      }
-
-      // Try API call if no stored data
-      const params = new URLSearchParams({
+      // Use the imported API function with proper parameters
+      const params = {
         skip: (currentPage - 1) * 10,
         limit: 10,
         search: searchTerm,
         state: filterState
-      });
+      };
 
-      const response = await fetch(`/api/membership/?${params}`);
-      if (response.ok) {
-        const data = await response.json();
-        setMembers(data);
-        setTotalPages(Math.ceil(data.length / 10));
-      } else {
-        console.error('Failed to fetch members');
-        // Fall back to demo data
-        throw new Error('API failed');
-      }
+      const data = await getMembers(params);
+      setMembers(data);
+      setTotalPages(Math.ceil(data.length / 10));
+      
     } catch (error) {
       console.error('Error fetching members:', error);
-      // For demo, show sample data
-      const demoData = [
-        {
-          id: 1,
-          membership_id: 'MMN-2025-000001',
-          name: 'Rama Rao',
-          father_name: 'Lakshmana Rao',
-          gender: 'Male',
-          phone: '9876543210',
-          email: 'rama@example.com',
-          village: 'Hyderabad',
-          district: 'Hyderabad',
-          state: 'Telangana',
-          status: 'pending',
-          photo_url: '/static/photos/photo_001.jpg',
-          created_at: '2025-01-01T10:00:00Z'
-        },
-        {
-          id: 2,
-          membership_id: 'MMN-2025-000002',
-          name: 'Sita Devi',
-          father_name: 'Janaka Rao',
-          gender: 'Female',
-          phone: '9876543211',
-          email: 'sita@example.com',
-          village: 'Warangal',
-          district: 'Warangal',
-          state: 'Telangana',
-          status: 'pending',
-          photo_url: '/static/photos/photo_002.jpg',
-          created_at: '2025-01-02T11:00:00Z'
-        }
-      ];
-      setMembers(demoData);
-      setTotalPages(Math.ceil(demoData.length / 10));
+      
+      // Show error message instead of mock data
+      setMembers([]);
+      setTotalPages(0);
+      
+      // You could show a toast notification here
+      alert('Failed to load members from server. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -165,7 +121,7 @@ const MemberDashboard = () => {
     e.preventDefault();
     try {
       // API call to send email with attachments
-      const response = await fetch('/api/send-email-with-attachments', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/send-email-with-attachments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -208,18 +164,14 @@ const MemberDashboard = () => {
         )
       );
       
-      // For now, use mock implementation since backend API is not available
-      // In production, this would be: await updateMemberStatus(memberId, status);
-      console.log(`Mock: Updating member ${memberId} status to ${status}`);
-      
-      // Store in localStorage for persistence
-      const updatedMembers = members.map(member => 
-        member.id === memberId ? { ...member, status } : member
-      );
-      localStorage.setItem('membersData', JSON.stringify(updatedMembers));
+      // Use the imported API function
+      await updateMemberStatus(memberId, status);
       
       // Show success message
       alert(`Member ${status} successfully!`);
+      
+      // Refresh the data to get updated status
+      fetchMembers();
       
     } catch (error) {
       console.error('Error updating member status:', error);

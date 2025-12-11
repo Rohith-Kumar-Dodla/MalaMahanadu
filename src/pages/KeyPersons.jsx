@@ -9,6 +9,7 @@ const KeyPersons = () => {
   const [error, setError] = useState(null);
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     // Check if mobile device
@@ -37,6 +38,16 @@ const KeyPersons = () => {
     
     return () => window.removeEventListener('resize', checkMobile);
   }, [isMobile]);
+
+  useEffect(() => {
+    if (isMobile && keyPersons.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % Math.ceil(keyPersons.length / 2));
+      }, 3000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [isMobile, keyPersons.length]);
 
   
   useEffect(() => {
@@ -135,78 +146,178 @@ const KeyPersons = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
-              {keyPersons.map((person) => {
-                const IconComponent = getRoleIcon(person.role);
-                return (
-                  <div
-                    key={person.id}
-                    className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer"
-                    onClick={() => {
-                      setSelectedPerson(person);
-                      // Smooth scroll to details section
-                      setTimeout(() => {
-                        const detailsSection = document.getElementById('details-section');
-                        if (detailsSection) {
-                          detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }, 100);
-                    }}
+            <div>
+              {/* Mobile Carousel View */}
+              {isMobile ? (
+                <div className="overflow-hidden">
+                  <div 
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{ transform: `translateX(-${currentSlide * 50}%)` }}
                   >
-                    {/* Photo */}
-                    <div className="relative aspect-[3/4] sm:aspect-[2/3] overflow-hidden">
-                      <img
-                        src={person.photo}
-                        alt={person.name}
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMjBweDsgZmlsbDogIzlDQTNBRjsiPlBob3RvPC90ZXh0Pgo8L3N2Zz4K';
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
+                    {keyPersons.map((person) => {
+                      const IconComponent = getRoleIcon(person.role);
+                      return (
+                        <div key={person.id} className="w-1/2 flex-shrink-0 px-2">
+                          <div
+                            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer"
+                            onClick={() => {
+                              setSelectedPerson(person);
+                              // Smooth scroll to details section
+                              setTimeout(() => {
+                                const detailsSection = document.getElementById('details-section');
+                                if (detailsSection) {
+                                  detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                              }, 100);
+                            }}
+                          >
+                            {/* Photo */}
+                            <div className="relative aspect-[3/4] overflow-hidden">
+                              <img
+                                src={person.photo}
+                                alt={person.name}
+                                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                                onError={(e) => {
+                                  e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMjBweDsgZmlsbDogIzlDQTNBRjsiPlBob3RvPC90ZXh0Pgo8L3N2Zz4K';
+                                }}
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            </div>
 
-                    {/* Content */}
-                    <div className="p-4 sm:p-6">
-                      {/* Icon and Role */}
-                      <div className="flex items-center justify-center mb-3 sm:mb-4">
-                        <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-full">
-                          <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-primary-600" />
+                            {/* Content */}
+                            <div className="p-3">
+                              {/* Icon and Role */}
+                              <div className="flex items-center justify-center mb-2">
+                                <div className="flex items-center justify-center w-8 h-8 bg-primary-100 rounded-full">
+                                  <IconComponent className="h-4 w-4 text-primary-600" />
+                                </div>
+                              </div>
+
+                              {/* Name and Role */}
+                              <h3 className="text-sm font-bold text-gray-900 mb-1 text-center">
+                                {person.name}
+                              </h3>
+                              <p className="text-primary-600 font-medium text-center mb-2 text-xs">
+                                {person.role}
+                              </p>
+
+                              {/* Bio */}
+                              <p className="text-gray-600 text-xs leading-relaxed text-center line-clamp-2">
+                                {person.bio}
+                              </p>
+
+                              {/* Contact Actions */}
+                              <div className="mt-3 flex justify-center">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // In a real app, this would open a contact form or email client
+                                    console.log('Contact:', person.name);
+                                  }}
+                                  className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-md transition-colors text-xs"
+                                  title="Contact"
+                                >
+                                  <FaEnvelope className="h-3 w-3" />
+                                  <span>Contact</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Carousel Indicators */}
+                  <div className="flex justify-center mt-6 space-x-2">
+                    {Array.from({ length: Math.ceil(keyPersons.length / 2) }).map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentSlide(index)}
+                        className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                          currentSlide === index ? 'bg-primary-600' : 'bg-gray-300'
+                        }`}
+                        aria-label={`Go to slide ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                /* Desktop Grid View */
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
+                  {keyPersons.map((person) => {
+                    const IconComponent = getRoleIcon(person.role);
+                    return (
+                      <div
+                        key={person.id}
+                        className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer"
+                        onClick={() => {
+                          setSelectedPerson(person);
+                          // Smooth scroll to details section
+                          setTimeout(() => {
+                            const detailsSection = document.getElementById('details-section');
+                            if (detailsSection) {
+                              detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                          }, 100);
+                        }}
+                      >
+                        {/* Photo */}
+                        <div className="relative aspect-[3/4] sm:aspect-[2/3] overflow-hidden">
+                          <img
+                            src={person.photo}
+                            alt={person.name}
+                            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => {
+                              e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMjBweDsgZmlsbDogIzlDQTNBRjsiPlBob3RvPC90ZXh0Pgo8L3N2Zz4K';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-4 sm:p-6">
+                          {/* Icon and Role */}
+                          <div className="flex items-center justify-center mb-3 sm:mb-4">
+                            <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-full">
+                              <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-primary-600" />
+                            </div>
+                          </div>
+
+                          {/* Name and Role */}
+                          <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1 sm:mb-2 text-center">
+                            {person.name}
+                          </h3>
+                          <p className="text-primary-600 font-medium text-center mb-3 sm:mb-4 text-sm sm:text-base">
+                            {person.role}
+                          </p>
+
+                          {/* Bio */}
+                          <p className="text-gray-600 text-xs sm:text-sm leading-relaxed text-center line-clamp-3">
+                            {person.bio}
+                          </p>
+
+                          {/* Contact Actions */}
+                          <div className="mt-4 sm:mt-6 flex justify-center">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // In a real app, this would open a contact form or email client
+                                console.log('Contact:', person.name);
+                              }}
+                              className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-md transition-colors text-xs sm:text-sm"
+                              title="Contact"
+                            >
+                              <FaEnvelope className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span>Contact</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
-
-                      {/* Name and Role */}
-                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1 sm:mb-2 text-center">
-                        {person.name}
-                      </h3>
-                      <p className="text-primary-600 font-medium text-center mb-3 sm:mb-4 text-sm sm:text-base">
-                        {person.role}
-                      </p>
-
-                      {/* Bio */}
-                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed text-center line-clamp-3">
-                        {person.bio}
-                      </p>
-
-                      {/* Contact Actions */}
-                      <div className="mt-4 sm:mt-6 flex justify-center">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // In a real app, this would open a contact form or email client
-                            console.log('Contact:', person.name);
-                          }}
-                          className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-md transition-colors text-xs sm:text-sm"
-                          title="Contact"
-                        >
-                          <FaEnvelope className="h-3 w-3 sm:h-4 sm:w-4" />
-                          <span>Contact</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>

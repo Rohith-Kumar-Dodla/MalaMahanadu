@@ -9,6 +9,29 @@ import { getSettings } from '../api/mockApi';
 const Home = () => {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      const interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % Math.ceil(keyPersons.length / 2));
+      }, 3000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [isMobile, keyPersons.length]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,6 +50,27 @@ const Home = () => {
 
     fetchData();
   }, []);
+
+  const keyPersons = [
+    {
+      name: "Chennaiah",
+      role: "National President",
+      photo: "/mock-images/chennaiah.jpg",
+      description: "G. Chennaiah serves as the National President of Mala Mahanadu, a prominent organisation dedicated to the upliftment, rights"
+    },
+    {
+      name: "Burugula Venkateswarlu",
+      role: "State President", 
+      photo: "/mock-images/burgula-venkateswarlu.jpg",
+      description: "Leading the state-level initiatives and representing our community at the regional level"
+    },
+    {
+      name: "Dr. Manda Ranjith Kumar",
+      role: "State General Secretary",
+      photo: "/mock-images/Manda-Ranjith-Kumar.jpg",
+      description: "Managing organizational operations and coordinating community development programs"
+    }
+  ];
 
   
   
@@ -98,61 +142,80 @@ const Home = () => {
               Mala Mahanadu key persons—the National President, State President, and State General Secretary—stand together as the heart, voice, and strength of our community, guiding our people, uniting our families, and leading every step of our upliftment.
             </p>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
-                  <img
-                    src="/mock-images/chennaiah.jpg"
-                    alt="Chennaiah"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.outerHTML = '<div class="w-24 h-24 bg-gold-100 rounded-full mx-auto mb-4 flex items-center justify-center"><svg class="w-16 h-16 text-gold-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
-                    }}
-                  />
+            <div className="relative">
+            {/* Mobile/Tablet Carousel View */}
+            {isMobile ? (
+              <div className="overflow-hidden">
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * 50}%)` }}
+                >
+                  {keyPersons.map((person, index) => (
+                    <div key={index} className="w-1/2 flex-shrink-0 px-2">
+                      <Link to="/key-persons" className="block">
+                        <div className="bg-white p-4 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300 cursor-pointer mx-auto">
+                          <div className="w-20 h-20 rounded-full mx-auto mb-3 overflow-hidden">
+                            <img
+                              src={person.photo}
+                              alt={person.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.outerHTML = '<div class="w-20 h-20 bg-gold-100 rounded-full mx-auto mb-3 flex items-center justify-center"><svg class="w-12 h-12 text-gold-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
+                              }}
+                            />
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-900 mb-1">{person.name}</h3>
+                          <p className="text-sm text-gray-600 mb-2">{person.role}</p>
+                          <p className="text-xs text-gray-500 line-clamp-2">
+                            {person.description}
+                          </p>
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Chennaiah</h3>
-                <p className="text-gray-600 mb-4">National President</p>
-                <p className="text-sm text-gray-500">
-                  G. Chennaiah serves as the National President of Mala Mahanadu, a prominent organisation dedicated to the upliftment, rights
-                </p>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
-                  <img
-                    src="/mock-images/burgula-venkateswarlu.jpg"
-                    alt="Burugula Venkateswarlu"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.outerHTML = '<div class="w-24 h-24 bg-gold-100 rounded-full mx-auto mb-4 flex items-center justify-center"><svg class="w-16 h-16 text-gold-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
-                    }}
-                  />
+                
+                {/* Carousel Indicators */}
+                <div className="flex justify-center mt-6 space-x-2">
+                  {Array.from({ length: Math.ceil(keyPersons.length / 2) }).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                        currentSlide === index ? 'bg-gold-500' : 'bg-gray-300'
+                      }`}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Burugula Venkateswarlu</h3>
-                <p className="text-gray-600 mb-4">State President</p>
-                <p className="text-sm text-gray-500">
-                  Leading the state-level initiatives and representing our community at the regional level
-                </p>
               </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
-                  <img
-                    src="/mock-images/Manda-Ranjith-Kumar.jpg"
-                    alt="Dr. Manda Ranjith Kumar"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.outerHTML = '<div class="w-24 h-24 bg-gold-100 rounded-full mx-auto mb-4 flex items-center justify-center"><svg class="w-16 h-16 text-gold-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
-                    }}
-                  />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Dr. Manda Ranjith Kumar</h3>
-                <p className="text-gray-600 mb-4">State General Secretary</p>
-                <p className="text-sm text-gray-500">
-                  Managing organizational operations and coordinating community development programs
-                </p>
+            ) : (
+              /* Desktop Grid View */
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {keyPersons.map((person, index) => (
+                  <Link key={index} to="/key-persons" className="block">
+                    <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+                      <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
+                        <img
+                          src={person.photo}
+                          alt={person.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.outerHTML = '<div class="w-24 h-24 bg-gold-100 rounded-full mx-auto mb-4 flex items-center justify-center"><svg class="w-16 h-16 text-gold-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
+                          }}
+                        />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{person.name}</h3>
+                      <p className="text-gray-600 mb-4">{person.role}</p>
+                      <p className="text-sm text-gray-500">
+                        {person.description}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </div>
+            )}
+          </div>
             
             <div className="text-center mt-12">
               <Link

@@ -138,9 +138,10 @@ const Membership = () => {
         }
       });
       
-      const response = await fetch('/api/membership/register', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/membership/register`, {
         method: 'POST',
-        body: formDataToSend
+        body: formDataToSend,
+        headers: {} // Let browser set Content-Type for FormData
       });
       
       const result = await response.json();
@@ -160,6 +161,13 @@ const Membership = () => {
     } catch (error) {
       console.error('Submission error:', error);
       setSubmitStatus('error');
+      
+      // Check if it's a network/backend unavailable error
+      if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+        setErrorMessage('Unable to connect to the server. Please try again later or contact support.');
+      } else {
+        setErrorMessage('Registration failed. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }

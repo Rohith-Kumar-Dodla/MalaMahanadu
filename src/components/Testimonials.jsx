@@ -6,19 +6,19 @@ const Testimonials = () => {
     {
       name: "Chennaiah",
       role: "National President",
-      content: "The Mala community is one of the major Scheduled Caste (SC) groups predominantly found in Andhra Pradesh and Telangana. Our community has shown remarkable resilience and progress despite facing historical challenges.",
+      content: "Our strength lies in unity and collective action. Together, we are building a future where every member of the Mala community can achieve their full potential and contribute to the nation's progress.",
       rating: 5
     },
     {
       name: "Narendra",
       role: "Community Leader",
-      content: "The Mala community is one of the major Scheduled Caste (SC) groups predominantly found in Andhra Pradesh and Telangana. We continue to strive for social justice and equality.",
+      content: "Education is the key to empowerment. We must ensure that our children have access to quality education and opportunities that will enable them to break barriers and reach new heights.",
       rating: 5
     },
     {
       name: "Gopal",
       role: "Social Activist",
-      content: "The Mala community is one of the major Scheduled Caste (SC) groups predominantly found in Andhra Pradesh and Telangana. Our collective strength lies in unity and education.",
+      content: "Social justice and equality are not just ideals, they are rights we must fight for every day. Our community's progress depends on our commitment to these fundamental values.",
       rating: 5
     }
   ];
