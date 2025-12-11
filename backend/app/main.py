@@ -27,9 +27,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-app.mount("/static/gallery", StaticFiles(directory="uploads/gallery"), name="gallery")
+# Mount static files with CORS
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import Response
+from fastapi import Request
+
+class CORSSStaticFiles(StaticFiles):
+    async def __call__(self, scope: dict, receive: dict, send: dict) -> None:
+        async def send_wrapper(message):
+            if message["type"] == "http.response.start":
+                headers = list(message.get("headers", []))
+                headers.extend([
+                    (b"access-control-allow-origin", b"http://localhost:5173"),
+                    (b"access-control-allow-credentials", b"true"),
+                    (b"access-control-allow-methods", b"*"),
+                    (b"access-control-allow-headers", b"*"),
+                ])
+                message["headers"] = headers
+            await send(message)
+        
+        await super().__call__(scope, receive, send_wrapper)
+
+app.mount("/static", CORSSStaticFiles(directory="app/static"), name="static")
+app.mount("/static/gallery", CORSSStaticFiles(directory="uploads/gallery"), name="gallery")
+app.mount("/static/photos", CORSSStaticFiles(directory="app/static/photos"), name="photos")
 
 # Include routers
 app.include_router(membership.router, prefix="/api/membership", tags=["membership"])

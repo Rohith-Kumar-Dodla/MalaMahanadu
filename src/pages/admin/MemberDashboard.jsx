@@ -8,6 +8,8 @@ const MemberDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterState, setFilterState] = useState('');
+  const [filterDistrict, setFilterDistrict] = useState('');
+  const [filterMandal, setFilterMandal] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
@@ -28,7 +30,7 @@ const MemberDashboard = () => {
     }
 
     fetchMembers();
-  }, [currentPage, searchTerm, filterState]);
+  }, [currentPage, searchTerm, filterState, filterDistrict, filterMandal]);
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -38,7 +40,9 @@ const MemberDashboard = () => {
         skip: (currentPage - 1) * 10,
         limit: 10,
         search: searchTerm,
-        state: filterState
+        state: filterState,
+        district: filterDistrict,
+        mandal: filterMandal
       };
 
       const data = await getMembers(params);
@@ -266,84 +270,9 @@ const MemberDashboard = () => {
         return;
       }
 
-      // Get the ID card URL from the member data or generate it
-      let idCardUrl = selectedMember.id_card_url;
+      // Use html2canvas directly for better control and to avoid server fetch issues
+      await downloadWithHtml2Canvas(memberId, format, selectedMember);
       
-      // If no ID card URL exists, try to construct it
-      if (!idCardUrl) {
-        idCardUrl = `/static/idcards/ID_${selectedMember.membership_id.replace('-', '_')}.png`;
-      }
-
-      if (format === 'png') {
-        // Download the PNG directly from server
-        try {
-          const response = await fetch(idCardUrl);
-          if (!response.ok) {
-            throw new Error('ID card not found on server');
-          }
-          
-          const blob = await response.blob();
-          
-          // Ensure we have the correct MIME type
-          const mimeType = blob.type || 'image/png';
-          const correctedBlob = new Blob([blob], { type: mimeType });
-          
-          const url = window.URL.createObjectURL(correctedBlob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `ID-Card-${selectedMember.membership_id}.png`;
-          a.style.display = 'none';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          
-          // Clean up the URL after a short delay
-          setTimeout(() => {
-            window.URL.revokeObjectURL(url);
-          }, 100);
-          
-          console.log('ID Card downloaded successfully');
-        } catch (fetchError) {
-          console.error('Error fetching ID card from server:', fetchError);
-          // Fallback to html2canvas method
-          await downloadWithHtml2Canvas(memberId, format, selectedMember);
-        }
-      } else if (format === 'pdf') {
-        // Try to download PDF version first
-        try {
-          const pdfUrl = idCardUrl.replace('.png', '.pdf');
-          const response = await fetch(pdfUrl);
-          if (response.ok) {
-            const blob = await response.blob();
-            
-            // Ensure we have the correct MIME type
-            const mimeType = blob.type || 'application/pdf';
-            const correctedBlob = new Blob([blob], { type: mimeType });
-            
-            const url = window.URL.createObjectURL(correctedBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `ID-Card-${selectedMember.membership_id}.pdf`;
-            a.style.display = 'none';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            // Clean up the URL after a short delay
-            setTimeout(() => {
-              window.URL.revokeObjectURL(url);
-            }, 100);
-            
-            console.log('PDF downloaded successfully');
-            return;
-          }
-        } catch (pdfError) {
-          console.log('PDF not available, converting PNG to PDF');
-        }
-        
-        // Fallback: convert PNG to PDF
-        await downloadWithHtml2Canvas(memberId, format, selectedMember);
-      }
     } catch (error) {
       console.error('Error downloading ID card:', error);
       alert('Failed to download ID card. Please try again.');
@@ -359,47 +288,181 @@ const MemberDashboard = () => {
         return;
       }
 
-      // Convert image to data URL if it's a local image
-      if (selectedMember?.photo_url) {
-        const dataUrl = await getImageDataUrl(selectedMember.photo_url);
-        const imgElements = idCardElement.querySelectorAll('img');
-        imgElements.forEach(img => {
-          const currentSrc = img.src;
-          const expectedSrc = selectedMember.photo_url.startsWith('http') 
-            ? selectedMember.photo_url 
-            : window.location.origin + selectedMember.photo_url;
-          
-          if (currentSrc === expectedSrc || currentSrc.includes(selectedMember.photo_url)) {
-            img.src = dataUrl;
-          }
-        });
-      }
+      // Clone the element to avoid modifying the original
+      const clonedElement = idCardElement.cloneNode(true);
+      clonedElement.id = `id-card-${memberId}-clone`;
+      
+      // Position the clone off-screen for html2canvas but keep it visible
+      clonedElement.style.position = 'absolute';
+      clonedElement.style.left = '0px';
+      clonedElement.style.top = '0px';
+      clonedElement.style.visibility = 'visible';
+      clonedElement.style.zIndex = '-9999';
+      clonedElement.style.width = idCardElement.offsetWidth + 'px';
+      clonedElement.style.height = idCardElement.offsetHeight + 'px';
+      document.body.appendChild(clonedElement);
 
-      // Wait a moment for images to load
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Get images and fallback avatars from the clone
+      const clonedImages = clonedElement.querySelectorAll('img');
+      const clonedFallbacks = clonedElement.querySelectorAll('.fallback-avatar');
+      
+      // Initially hide all fallback avatars
+      clonedFallbacks.forEach(avatar => {
+        avatar.style.display = 'none';
+      });
+
+      // Ensure all text elements are visible and have proper content
+      const textElements = clonedElement.querySelectorAll('span, p, div');
+      textElements.forEach(element => {
+        if (element.textContent.trim() === '' || element.textContent === 'undefined' || element.textContent === 'null') {
+          // Find corresponding element in original and copy its content
+          const originalElements = idCardElement.querySelectorAll(element.tagName);
+          const originalIndex = Array.from(originalElements).findIndex(el => 
+            el.className === element.className && 
+            el.textContent.trim() !== '' && 
+            el.textContent !== 'undefined' && 
+            el.textContent !== 'null'
+          );
+          
+          if (originalIndex >= 0 && originalElements[originalIndex]) {
+            element.textContent = originalElements[originalIndex].textContent;
+          }
+        }
+        // Ensure text is visible
+        element.style.visibility = 'visible';
+        element.style.opacity = '1';
+      });
+
+      // For CORS images, we'll skip canvas conversion and let html2canvas handle them
+      clonedImages.forEach((img, index) => {
+        const originalImg = idCardElement.querySelectorAll('img')[index];
+        let imageUrl = '';
+        
+        if (selectedMember?.photo_url && originalImg) {
+          imageUrl = selectedMember.photo_url.startsWith('http') 
+            ? selectedMember.photo_url 
+            : selectedMember.photo_url.startsWith('/mock-images/') || selectedMember.photo_url.startsWith('/assets/')
+              ? selectedMember.photo_url
+              : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedMember.photo_url}`;
+        }
+        
+        // For CORS images, now that CORS is fixed, we can use them
+        if (imageUrl.includes('localhost:8000') || imageUrl.includes('127.0.0.1:8000')) {
+          img.src = imageUrl;
+          img.style.display = 'block';
+          // Hide fallback avatar
+          const parent = img.parentElement;
+          if (parent) {
+            const fallback = parent.querySelector('.fallback-avatar');
+            if (fallback) {
+              fallback.style.display = 'none';
+            }
+          }
+        } else if (imageUrl.startsWith('data:')) {
+          // Data URLs are safe to use
+          img.src = imageUrl;
+          img.style.display = 'block';
+        } else if (imageUrl.startsWith('/mock-images/') || imageUrl.startsWith('/assets/')) {
+          // Local assets are safe
+          img.src = imageUrl;
+          img.style.display = 'block';
+        } else {
+          // Other images or no photo, show fallback avatar
+          img.style.display = 'none';
+          const parent = img.parentElement;
+          if (parent) {
+            const fallback = parent.querySelector('.fallback-avatar');
+            if (fallback) {
+              fallback.style.display = 'flex';
+            }
+          }
+        }
+      });
+      
+      // Wait a moment for any remaining images to render
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(idCardElement, {
+      const canvas = await html2canvas(clonedElement, {
         scale: 2,
-        backgroundColor: '#0A1A3F',
+        backgroundColor: '#ffffff',
         useCORS: true,
         allowTaint: true,
         logging: false,
         foreignObjectRendering: false,
-        imageTimeout: 15000
+        imageTimeout: 10000,
+        width: clonedElement.offsetWidth,
+        height: clonedElement.offsetHeight,
+        // Ensure proper canvas rendering
+        willReadFrequently: true,
+        removeContainer: false,
+        // Better image handling
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: clonedElement.offsetWidth,
+        windowHeight: clonedElement.offsetHeight,
+        // Force rendering of all elements
+        onclone: (clonedDoc) => {
+          const clonedDocImages = clonedDoc.querySelectorAll('img');
+          const clonedDocFallbacks = clonedDoc.querySelectorAll('.fallback-avatar');
+          
+          // Hide fallback avatars in clone when photos are available
+          clonedDocFallbacks.forEach((avatar, index) => {
+            const correspondingImg = clonedDocImages[index];
+            if (correspondingImg && correspondingImg.src && 
+                (correspondingImg.src.includes('localhost:8000') || 
+                 correspondingImg.src.includes('127.0.0.1:8000') ||
+                 correspondingImg.src.startsWith('data:') ||
+                 correspondingImg.src.includes('/mock-images/') ||
+                 correspondingImg.src.includes('/assets/'))) {
+              avatar.style.display = 'none';
+            } else {
+              avatar.style.display = 'flex';
+            }
+          });
+          
+          // Copy text content from original to clone
+          const originalTextElements = idCardElement.querySelectorAll('span, p, div');
+          const clonedDocTextElements = clonedDoc.querySelectorAll('span, p, div');
+          
+          originalTextElements.forEach((originalEl, index) => {
+            if (clonedDocTextElements[index]) {
+              clonedDocTextElements[index].textContent = originalEl.textContent;
+              clonedDocTextElements[index].style.visibility = 'visible';
+              clonedDocTextElements[index].style.opacity = '1';
+            }
+          });
+        }
       });
       
+      // Remove the clone after capture
+      document.body.removeChild(clonedElement);
+      
       if (format === 'png') {
-        // Convert to blob and download
+        // Convert to blob and download with proper PNG headers
         canvas.toBlob((blob) => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `ID-Card-${selectedMember.membership_id}.png`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
+          if (blob && blob.size > 0) {
+            // Create a new blob with explicit PNG MIME type
+            const pngBlob = new Blob([blob], { type: 'image/png' });
+            const url = URL.createObjectURL(pngBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ID-Card-${selectedMember.membership_id}.png`;
+            a.style.display = 'none';
+            
+            // Set proper attributes for file recognition
+            a.setAttribute('type', 'image/png');
+            a.setAttribute('download', `ID-Card-${selectedMember.membership_id}.png`);
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log('PNG generated and downloaded successfully - Size:', blob.size, 'bytes');
+          } else {
+            throw new Error('Failed to generate PNG blob');
+          }
         }, 'image/png', 0.95);
       } else if (format === 'pdf') {
         // Use jsPDF library to convert to PDF
@@ -412,6 +475,7 @@ const MemberDashboard = () => {
         
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
         pdf.save(`ID-Card-${selectedMember.membership_id}.pdf`);
+        console.log('PDF generated and downloaded successfully');
       }
     } catch (error) {
       console.error('Error in html2canvas fallback:', error);
@@ -428,8 +492,10 @@ const MemberDashboard = () => {
       (member.aadhar && member.aadhar.includes(searchTerm.replace(/\s/g, '')));
     
     const matchesState = !filterState || member.state === filterState;
+    const matchesDistrict = !filterDistrict || member.district === filterDistrict;
+    const matchesMandal = !filterMandal || member.mandal === filterMandal;
     
-    return matchesSearch && matchesState;
+    return matchesSearch && matchesState && matchesDistrict && matchesMandal;
   });
 
   return (
@@ -514,17 +580,117 @@ const MemberDashboard = () => {
                 />
               </div>
               
-              <div className="flex flex-col xs:flex-col sm:flex-col sm:flex-row gap-2 xs:gap-3 sm:gap-3 sm:gap-4">
-                <div className="flex-1 xs:flex-1 sm:flex-1 sm:flex-none">
+              <div className="flex flex-wrap gap-2 xs:gap-3 sm:gap-3 sm:gap-4">
+                <div className="flex-1 min-w-32">
                   <select
                     value={filterState}
-                    onChange={(e) => setFilterState(e.target.value)}
-                    className="block w-full xs:w-full sm:w-full sm:w-auto px-2 xs:px-3 sm:px-3 sm:px-4 py-2 text-xs xs:text-sm sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent min-w-24 xs:min-w-28 sm:min-w-32"
+                    onChange={(e) => {
+                      setFilterState(e.target.value);
+                      setFilterDistrict('');
+                      setFilterMandal('');
+                    }}
+                    className="block w-full px-2 xs:px-3 sm:px-3 sm:px-4 py-2 text-xs xs:text-sm sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                   >
                     <option value="">All States</option>
                     <option value="Telangana">Telangana</option>
                     <option value="Andhra Pradesh">Andhra Pradesh</option>
                     <option value="Karnataka">Karnataka</option>
+                  </select>
+                </div>
+                
+                <div className="flex-1 min-w-32">
+                  <select
+                    value={filterDistrict}
+                    onChange={(e) => {
+                      setFilterDistrict(e.target.value);
+                      setFilterMandal('');
+                    }}
+                    disabled={!filterState}
+                    className="block w-full px-2 xs:px-3 sm:px-3 sm:px-4 py-2 text-xs xs:text-sm sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  >
+                    <option value="">All Districts</option>
+                    {filterState === 'Telangana' && (
+                      <>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Ranga Reddy">Ranga Reddy</option>
+                        <option value="Karimnagar">Karimnagar</option>
+                        <option value="Khammam">Khammam</option>
+                        <option value="Nalgonda">Nalgonda</option>
+                        <option value="Medak">Medak</option>
+                        <option value="Nizamabad">Nizamabad</option>
+                        <option value="Adilabad">Adilabad</option>
+                        <option value="Warangal">Warangal</option>
+                        <option value="Mahabubnagar">Mahabubnagar</option>
+                        <option value="Siddipet">Siddipet</option>
+                        <option value="Jagtial">Jagtial</option>
+                        <option value="Peddapalli">Peddapalli</option>
+                        <option value="Jayashankar">Jayashankar</option>
+                        <option value="Suryapet">Suryapet</option>
+                        <option value="Kamareddy">Kamareddy</option>
+                      </>
+                    )}
+                    {filterState === 'Andhra Pradesh' && (
+                      <>
+                        <option value="Visakhapatnam">Visakhapatnam</option>
+                        <option value="Vijayawada">Vijayawada</option>
+                        <option value="Guntur">Guntur</option>
+                        <option value="Nellore">Nellore</option>
+                        <option value="Kurnool">Kurnool</option>
+                        <option value="Tirupati">Tirupati</option>
+                      </>
+                    )}
+                    {filterState === 'Karnataka' && (
+                      <>
+                        <option value="Bengaluru">Bengaluru</option>
+                        <option value="Mysuru">Mysuru</option>
+                        <option value="Hubballi">Hubballi</option>
+                        <option value="Mangaluru">Mangaluru</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+                
+                <div className="flex-1 min-w-32">
+                  <select
+                    value={filterMandal}
+                    onChange={(e) => setFilterMandal(e.target.value)}
+                    disabled={!filterDistrict}
+                    className="block w-full px-2 xs:px-3 sm:px-3 sm:px-4 py-2 text-xs xs:text-sm sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  >
+                    <option value="">All Mandals</option>
+                    {filterDistrict === 'Hyderabad' && (
+                      <>
+                        <option value="Charminar">Charminar</option>
+                        <option value="Secunderabad">Secunderabad</option>
+                        <option value="Banjara Hills">Banjara Hills</option>
+                        <option value="Jubilee Hills">Jubilee Hills</option>
+                        <option value="Miyapur">Miyapur</option>
+                      </>
+                    )}
+                    {filterDistrict === 'Ranga Reddy' && (
+                      <>
+                        <option value="Shamshabad">Shamshabad</option>
+                        <option value="Chevella">Chevella</option>
+                        <option value="Vikarabad">Vikarabad</option>
+                        <option value="Tandur">Tandur</option>
+                      </>
+                    )}
+                    {filterDistrict === 'Karimnagar' && (
+                      <>
+                        <option value="Karimnagar Urban">Karimnagar Urban</option>
+                        <option value="Karimnagar Rural">Karimnagar Rural</option>
+                        <option value="Sircilla">Sircilla</option>
+                        <option value="Manakondur">Manakondur</option>
+                      </>
+                    )}
+                    {filterDistrict === 'Warangal' && (
+                      <>
+                        <option value="Warangal Urban">Warangal Urban</option>
+                        <option value="Warangal Rural">Warangal Rural</option>
+                        <option value="Hanamkonda">Hanamkonda</option>
+                        <option value="Kazipet">Kazipet</option>
+                      </>
+                    )}
                   </select>
                 </div>
                 
@@ -541,6 +707,8 @@ const MemberDashboard = () => {
                     onClick={() => {
                       setSearchTerm('');
                       setFilterState('');
+                      setFilterDistrict('');
+                      setFilterMandal('');
                       setCurrentPage(1);
                     }}
                     className="px-2 xs:px-3 sm:px-3 sm:px-4 py-2 text-xs xs:text-sm sm:text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"

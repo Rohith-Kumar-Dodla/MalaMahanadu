@@ -45,7 +45,7 @@ const Home = () => {
       id: "5",
       name: "P. Koteswara Rao",
       role: "National Employees Association President",
-      photo: "/mock-images/koteswara-rao.jpg",
+      photo: "/mock-images/p.koteshwarroa.jpg",
       description: "Representing and advocating for employee rights and welfare at national level."
     }
   ];
@@ -70,9 +70,10 @@ const Home = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // Show 1 card per slide on mobile, 3 cards per slide on desktop
-      const cardsPerSlide = isMobile ? 1 : 3;
-      setCurrentSlide((prev) => (prev + 1) % Math.ceil(keyPersons.length / cardsPerSlide));
+      // Show 1 card per slide on mobile, 5 cards per slide on desktop
+      const cardsPerSlide = isMobile ? 1 : 5;
+      const totalSlides = Math.ceil(keyPersons.length / cardsPerSlide);
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
     }, 3000);
     
     return () => clearInterval(interval);
@@ -171,10 +172,10 @@ const Home = () => {
             <div className="overflow-hidden">
               <div 
                 className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentSlide * (isMobile ? 100 : 33.333)}%)` }}
+                style={{ transform: `translateX(-${currentSlide * (isMobile ? 100 : 20)}%)` }}
               >
                 {keyPersons.map((person, index) => (
-                  <div key={index} className={`flex-shrink-0 px-2 ${isMobile ? 'w-full' : 'w-1/3'}`}>
+                  <div key={index} className={`flex-shrink-0 px-2 ${isMobile ? 'w-full' : 'w-1/5'}`}>
                     <Link to="/key-persons" className="block">
                       <div className="bg-white p-3 xs:p-4 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300 cursor-pointer mx-auto">
                         <div className="w-16 xs:w-20 h-16 xs:h-20 rounded-full mx-auto mb-2 xs:mb-3 overflow-hidden">
@@ -200,7 +201,7 @@ const Home = () => {
               
               {/* Carousel Indicators */}
               <div className="flex justify-center mt-4 xs:mt-6 space-x-2">
-                {Array.from({ length: Math.ceil(keyPersons.length / (isMobile ? 1 : 3)) }).map((_, index) => (
+                {Array.from({ length: Math.ceil(keyPersons.length / (isMobile ? 1 : 5)) }).map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
