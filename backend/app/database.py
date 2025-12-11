@@ -9,11 +9,14 @@ DATABASE_URL = os.getenv(
     "sqlite:///./mala_mahanadu.db"
 )
 
-# Create engine with SQLite-specific settings
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}  # SQLite specific setting
-)
+# Create engine with database-specific settings
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False}  # SQLite specific setting
+    )
+else:
+    engine = create_engine(DATABASE_URL)  # PostgreSQL (Railway)
 
 # Create SessionLocal class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
