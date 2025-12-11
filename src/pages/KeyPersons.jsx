@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { FaUsers, FaEnvelope, FaPhone, FaGraduationCap, FaAward, FaSpinner } from 'react-icons/fa';
 import SeoHead from '../components/SeoHead';
 import { getKeyPersons } from '../api/mockApi';
 
 const KeyPersons = () => {
+  const { personId } = useParams();
   const [keyPersons, setKeyPersons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,6 +53,9 @@ const KeyPersons = () => {
 
   
   useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+    
     const fetchKeyPersons = async () => {
       try {
         setLoading(true);

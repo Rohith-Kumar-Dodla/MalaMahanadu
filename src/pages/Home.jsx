@@ -14,22 +14,39 @@ const Home = () => {
 
   const keyPersons = [
     {
+      id: "1",
       name: "Chennaiah",
       role: "National President",
       photo: "/mock-images/chennaiah.jpg",
       description: "G. Chennaiah serves as the National President of Mala Mahanadu, a prominent organisation dedicated to the upliftment, rights"
     },
     {
+      id: "2",
       name: "Burugula Venkateswarlu",
       role: "State President", 
       photo: "/mock-images/burgula-venkateswarlu.jpg",
       description: "Leading the state-level initiatives and representing our community at the regional level"
     },
     {
+      id: "3",
       name: "Dr. Manda Ranjith Kumar",
       role: "State General Secretary",
       photo: "/mock-images/Manda-Ranjith-Kumar.jpg",
       description: "Managing organizational operations and coordinating community development programs"
+    },
+    {
+      id: "4",
+      name: "Bhaindla Srinivas",
+      role: "Greater Hyderabad President",
+      photo: "/mock-images/bhaindla-srinivas.jpg",
+      description: "Leading Hyderabad region initiatives and community development programs."
+    },
+    {
+      id: "5",
+      name: "P. Koteswara Rao",
+      role: "National Employees Association President",
+      photo: "/mock-images/koteswara-rao.jpg",
+      description: "Representing and advocating for employee rights and welfare at national level."
     }
   ];
 
@@ -45,13 +62,17 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (isMobile) {
-      const interval = setInterval(() => {
+    const interval = setInterval(() => {
+      if (isMobile) {
+        // Mobile: Show 2 cards per slide
         setCurrentSlide((prev) => (prev + 1) % Math.ceil(keyPersons.length / 2));
-      }, 3000);
-      
-      return () => clearInterval(interval);
-    }
+      } else {
+        // Desktop: Show 3 cards per slide
+        setCurrentSlide((prev) => (prev + 1) % Math.ceil(keyPersons.length / 3));
+      }
+    }, 3000);
+    
+    return () => clearInterval(interval);
   }, [isMobile, keyPersons.length]);
 
   useEffect(() => {
@@ -143,78 +164,51 @@ const Home = () => {
             </p>
             
             <div className="relative">
-            {/* Mobile/Tablet Carousel View */}
-            {isMobile ? (
-              <div className="overflow-hidden">
-                <div 
-                  className="flex transition-transform duration-500 ease-in-out"
-                  style={{ transform: `translateX(-${currentSlide * 50}%)` }}
-                >
-                  {keyPersons.map((person, index) => (
-                    <div key={index} className="w-1/2 flex-shrink-0 px-2">
-                      <Link to="/key-persons" className="block">
-                        <div className="bg-white p-4 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300 cursor-pointer mx-auto">
-                          <div className="w-20 h-20 rounded-full mx-auto mb-3 overflow-hidden">
-                            <img
-                              src={person.photo}
-                              alt={person.name}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.outerHTML = '<div class="w-20 h-20 bg-gold-100 rounded-full mx-auto mb-3 flex items-center justify-center"><svg class="w-12 h-12 text-gold-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
-                              }}
-                            />
-                          </div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-1">{person.name}</h3>
-                          <p className="text-sm text-gray-600 mb-2">{person.role}</p>
-                          <p className="text-xs text-gray-500 line-clamp-2">
-                            {person.description}
-                          </p>
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Carousel Indicators */}
-                <div className="flex justify-center mt-6 space-x-2">
-                  {Array.from({ length: Math.ceil(keyPersons.length / 2) }).map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentSlide(index)}
-                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                        currentSlide === index ? 'bg-gold-500' : 'bg-gray-300'
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              /* Desktop Grid View */
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Carousel View for both Mobile and Desktop */}
+            <div className="overflow-hidden">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentSlide * (isMobile ? 50 : 33.333)}%)` }}
+              >
                 {keyPersons.map((person, index) => (
-                  <Link key={index} to="/key-persons" className="block">
-                    <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300 cursor-pointer">
-                      <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
-                        <img
-                          src={person.photo}
-                          alt={person.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.outerHTML = '<div class="w-24 h-24 bg-gold-100 rounded-full mx-auto mb-4 flex items-center justify-center"><svg class="w-16 h-16 text-gold-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
-                          }}
-                        />
+                  <div key={index} className={`flex-shrink-0 px-2 ${isMobile ? 'w-1/2' : 'w-1/3'}`}>
+                    <Link to="/key-persons" className="block">
+                      <div className="bg-white p-4 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300 cursor-pointer mx-auto">
+                        <div className={`${isMobile ? 'w-20 h-20' : 'w-24 h-24'} rounded-full mx-auto mb-3 overflow-hidden`}>
+                          <img
+                            src={person.photo}
+                            alt={person.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.outerHTML = `<div class="${isMobile ? 'w-20 h-20' : 'w-24 h-24'} bg-gold-100 rounded-full mx-auto mb-3 flex items-center justify-center"><svg class="${isMobile ? 'w-12 h-12' : 'w-16 h-16'} text-gold-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`;
+                            }}
+                          />
+                        </div>
+                        <h3 className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold text-gray-900 mb-1`}>{person.name}</h3>
+                        <p className={`${isMobile ? 'text-sm' : 'text-gray-600'} mb-2`}>{person.role}</p>
+                        <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-500 line-clamp-2`}>
+                          {person.description}
+                        </p>
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{person.name}</h3>
-                      <p className="text-gray-600 mb-4">{person.role}</p>
-                      <p className="text-sm text-gray-500">
-                        {person.description}
-                      </p>
-                    </div>
-                  </Link>
+                    </Link>
+                  </div>
                 ))}
               </div>
-            )}
+              
+              {/* Carousel Indicators */}
+              <div className="flex justify-center mt-6 space-x-2">
+                {Array.from({ length: Math.ceil(keyPersons.length / (isMobile ? 2 : 3)) }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                      currentSlide === index ? 'bg-gold-500' : 'bg-gray-300'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
             
             <div className="text-center mt-12">

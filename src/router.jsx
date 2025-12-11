@@ -19,6 +19,7 @@ import MemberDashboard from './pages/admin/MemberDashboard';
 import MemberDetails from './pages/admin/MemberDetails';
 import DonationsManagement from './pages/admin/DonationsManagement';
 import ComplaintsManagement from './pages/admin/ComplaintsManagement';
+import GalleryAdmin from './pages/admin/GalleryAdmin';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import NotFound from './pages/NotFound';
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       },
       {
         path: 'key-persons',
+        element: <KeyPersons />
+      },
+      {
+        path: 'key-persons/:personId',
         element: <KeyPersons />
       },
       {
@@ -121,6 +126,10 @@ const router = createBrowserRouter([
       {
         path: 'complaints',
         element: <ComplaintsManagement />
+      },
+      {
+        path: 'gallery',
+        element: <GalleryAdmin />
       }
     ]
   }
