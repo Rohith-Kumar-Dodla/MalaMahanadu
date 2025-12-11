@@ -23,36 +23,55 @@ const Header = () => {
   return (
     <header className="bg-primary-600 text-white shadow-lg sticky top-0 z-40">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-14 sm:h-16">
+        <div className="flex items-center justify-between h-14 xs:h-16 sm:h-16 md:h-16 lg:h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
+          <Link to="/" className="flex items-center space-x-2 xs:space-x-3 sm:space-x-3">
             <img 
               src="/assets/logo.png" 
               alt="Mala Mahanadu Logo" 
-              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full"
+              className="h-8 w-8 xs:h-9 xs:w-9 sm:h-10 sm:w-10 md:h-11 md:w-11 lg:h-12 lg:w-12 rounded-full"
               onError={(e) => {
                 e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNGRkYiLz4KPHRleHQgeD0iMjAiIHk9IjI1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgZmlsbDogIzAwMDsiPk1NPC90ZXh0Pgo8L3N2Zz4K';
               }}
             />
-            <span className="font-bold text-lg sm:text-xl hidden xs:block">Mala Mahanadu</span>
-            <span className="font-bold text-base xs:hidden">MM</span>
+            <span className="font-bold text-sm xs:text-base sm:text-lg md:text-xl lg:text-xl hidden xs:block">Mala Mahanadu</span>
+            <span className="font-bold text-xs xs:text-sm sm:text-base hidden sm:block lg:hidden">MM</span>
+            <span className="font-bold text-xs sm:hidden">MM</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-4 lg:space-x-6">
+          <nav className="hidden lg:flex items-center space-x-2 lg:space-x-4 xl:space-x-6">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center space-x-1 px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`flex items-center space-x-1 px-2 lg:px-3 xl:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
+                  isActive(item.href)
+                    ? 'bg-primary-700 text-white'
+                    : 'text-primary-100 hover:bg-primary-700 hover:text-white'
+                }`}
+              >
+                <item.icon className="h-3 w-3 xs:h-4 xs:w-4 sm:h-4 sm:w-4" />
+                <span className="hidden 2xl:block">{item.name}</span>
+                <span className="xl:hidden 2xl:block text-xs">{item.name.length > 8 ? item.name.split(' ')[0] : item.name}</span>
+              </Link>
+            ))}
+          </nav>
+
+          {/* Tablet Navigation */}
+          <nav className="hidden md:flex lg:hidden items-center space-x-1">
+            {navigation.slice(0, 5).map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`flex items-center space-x-1 px-2 py-2 rounded-md text-xs font-medium transition-colors ${
                   isActive(item.href)
                     ? 'bg-primary-700 text-white'
                     : 'text-primary-100 hover:bg-primary-700 hover:text-white'
                 }`}
               >
                 <item.icon className="h-4 w-4" />
-                <span className="hidden xl:block">{item.name}</span>
-                <span className="xl:hidden text-xs">{item.name.split(' ')[0]}</span>
+                <span className="hidden sm:block">{item.name.length > 6 ? item.name.split(' ')[0] : item.name}</span>
               </Link>
             ))}
           </nav>
@@ -60,16 +79,16 @@ const Header = () => {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2 rounded-md text-primary-100 hover:bg-primary-700 transition-colors"
+            className="md:hidden p-2 rounded-md text-primary-100 hover:bg-primary-700 transition-colors"
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? <FaTimes className="h-5 w-5 sm:h-6 sm:w-6" /> : <FaBars className="h-5 w-5 sm:h-6 sm:w-6" />}
+            {isMenuOpen ? <FaTimes className="h-4 w-4 xs:h-5 xs:w-5 sm:h-5 sm:w-5" /> : <FaBars className="h-4 w-4 xs:h-5 xs:w-5 sm:h-5 sm:w-5" />}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="lg:hidden py-3 sm:py-4 border-t border-primary-700">
+          <nav className="md:hidden py-3 xs:py-4 sm:py-4 border-t border-primary-700">
             <div className="grid grid-cols-1 gap-1">
               {navigation.map((item) => (
                 <Link
@@ -82,8 +101,8 @@ const Header = () => {
                       : 'text-primary-100 hover:bg-primary-700 hover:text-white'
                   }`}
                 >
-                  <item.icon className="h-5 w-5 flex-shrink-0" />
-                  <span>{item.name}</span>
+                  <item.icon className="h-4 w-4 xs:h-5 xs:w-5 flex-shrink-0" />
+                  <span className="text-xs xs:text-sm">{item.name}</span>
                 </Link>
               ))}
             </div>
