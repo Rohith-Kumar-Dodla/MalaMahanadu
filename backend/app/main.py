@@ -38,7 +38,7 @@ class CORSSStaticFiles(StaticFiles):
             if message["type"] == "http.response.start":
                 headers = list(message.get("headers", []))
                 headers.extend([
-                    (b"access-control-allow-origin", b"http://localhost:5173"),
+                    (b"access-control-allow-origin", b"*"),
                     (b"access-control-allow-credentials", b"true"),
                     (b"access-control-allow-methods", b"*"),
                     (b"access-control-allow-headers", b"*"),
