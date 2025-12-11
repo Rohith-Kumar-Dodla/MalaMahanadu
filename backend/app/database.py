@@ -6,11 +6,14 @@ import os
 # Database configuration
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://postgres:Rohith_1234@localhost:5432/MalaMahanadu"
+    "sqlite:///./mala_mahanadu.db"
 )
 
-# Create engine
-engine = create_engine(DATABASE_URL)
+# Create engine with SQLite-specific settings
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False}  # SQLite specific setting
+)
 
 # Create SessionLocal class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

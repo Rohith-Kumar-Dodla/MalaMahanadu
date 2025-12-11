@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { FaUsers, FaHandHoldingHeart, FaExclamationTriangle, FaSignOutAlt, FaBars, FaTimes, FaHome } from 'react-icons/fa';
+import { FaUsers, FaHandHoldingHeart, FaExclamationTriangle, FaSignOutAlt, FaBars, FaTimes, FaHome, FaImages } from 'react-icons/fa';
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -11,7 +11,8 @@ const AdminLayout = () => {
     { id: 'dashboard', label: 'Dashboard', icon: FaHome, path: '/admin/dashboard' },
     { id: 'members', label: 'Members', icon: FaUsers, path: '/admin/members' },
     { id: 'donations', label: 'Donations', icon: FaHandHoldingHeart, path: '/admin/donations' },
-    { id: 'complaints', label: 'Complaints', icon: FaExclamationTriangle, path: '/admin/complaints' }
+    { id: 'complaints', label: 'Complaints', icon: FaExclamationTriangle, path: '/admin/complaints' },
+    { id: 'gallery', label: 'Gallery', icon: FaImages, path: '/admin/gallery' }
   ];
 
   useEffect(() => {

@@ -12,6 +12,7 @@ const MemberDashboardNew = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState('members');
+  const [selectedMember, setSelectedMember] = useState(null);
 
   useEffect(() => {
     // Check if admin is logged in
@@ -45,7 +46,7 @@ const MemberDashboardNew = () => {
       }
     } catch (error) {
       console.error('Error fetching members:', error);
-      // For demo, show sample data
+      // For demo, show sample data with photo URLs
       setMembers([
         {
           id: 1,
@@ -58,6 +59,8 @@ const MemberDashboardNew = () => {
           village: 'Hyderabad',
           district: 'Hyderabad',
           state: 'Telangana',
+          photo_url: '/mock-images/chennaiah.jpg',
+          id_card_url: '/static/idcards/ID_MMN_2025_000001.png',
           created_at: '2025-01-01T10:00:00Z'
         },
         {
@@ -71,6 +74,8 @@ const MemberDashboardNew = () => {
           village: 'Warangal',
           district: 'Warangal',
           state: 'Telangana',
+          photo_url: '/mock-images/burgula-venkateswarlu.jpg',
+          id_card_url: '/static/idcards/ID_MMN_2025_000002.png',
           created_at: '2025-01-02T11:00:00Z'
         }
       ]);
@@ -134,6 +139,63 @@ const MemberDashboardNew = () => {
     } catch (error) {
       console.error('Error sending email:', error);
       alert('Error sending email');
+    }
+  };
+
+  const handleViewIdCard = (member) => {
+    setSelectedMember(member);
+  };
+
+  const handleDownloadIdCard = async (member) => {
+    if (!member) {
+      alert('Member not found');
+      return;
+    }
+    
+    try {
+      // Get the ID card URL from the member data or generate it
+      let idCardUrl = member.id_card_url;
+      
+      // If no ID card URL exists, try to construct it
+      if (!idCardUrl) {
+        idCardUrl = `/static/idcards/ID_${member.membership_id.replace('-', '_')}.png`;
+      }
+
+      // Download the PNG directly from server
+      try {
+        const response = await fetch(idCardUrl);
+        if (!response.ok) {
+          throw new Error('ID card not found on server');
+        }
+        
+        const blob = await response.blob();
+        
+        // Ensure we have the correct MIME type
+        const mimeType = blob.type || 'image/png';
+        const correctedBlob = new Blob([blob], { type: mimeType });
+        
+        const url = window.URL.createObjectURL(correctedBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ID-Card-${member.membership_id}.png`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        // Clean up the URL after a short delay
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 100);
+        
+        console.log('ID Card downloaded successfully');
+      } catch (fetchError) {
+        console.error('Error fetching ID card from server:', fetchError);
+        alert('ID card not found on server. Please regenerate the ID card first.');
+      }
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Failed to download ID card. Please try again.');
     }
   };
 
@@ -297,11 +359,18 @@ const MemberDashboardNew = () => {
                           <FaEnvelope className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => window.open(`/static/idcards/ID_${member.membership_id}.png`, '_blank')}
+                          onClick={() => handleViewIdCard(member)}
                           className="text-blue-600 hover:text-blue-900"
                           title="View ID Card"
                         >
                           <FaIdCard className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDownloadIdCard(member)}
+                          className="text-purple-600 hover:text-purple-900"
+                          title="Download ID Card"
+                        >
+                          <FaDownload className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -355,6 +424,132 @@ const MemberDashboardNew = () => {
           </div>
         )}
       </div>
+
+      {/* ID Card Preview Modal */}
+      {selectedMember && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-10 xs:top-20 mx-auto p-3 xs:p-5 border w-11/12 xs:w-11/12 md:w-3/4 lg:w-4/5 shadow-lg rounded-md bg-white">
+            <div className="flex justify-between items-center mb-3 xs:mb-4">
+              <h3 className="text-base xs:text-lg font-bold text-gray-900">ID Card Preview - {selectedMember.name}</h3>
+              <button
+                onClick={() => setSelectedMember(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <FaTimes className="w-4 h-4 xs:w-6 xs:h-6" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 xs:grid-cols-1 lg:grid-cols-2 gap-4 xs:gap-6">
+              {/* ID Card Preview */}
+              <div>
+                <h4 className="text-md font-semibold text-gray-800 mb-3">ID Card Preview</h4>
+                <div className="border-2 border-gray-300 rounded-lg p-4 bg-gradient-to-br from-blue-50 to-blue-100">
+                  {/* ID Card Design */}
+                  <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="text-center border-b-2 border-blue-600 pb-4 mb-4">
+                      <h2 className="text-xl font-bold text-blue-900">Mala Mahanadu</h2>
+                      <p className="text-sm text-gray-600">Membership Card</p>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4 mb-4">
+                      <div className="relative">
+                        {selectedMember.photo_url && 
+                         selectedMember.photo_url.trim() !== '' ? (
+                          <>
+                            <img 
+                              src={selectedMember.photo_url.startsWith('http') 
+                                ? selectedMember.photo_url 
+                                : selectedMember.photo_url.startsWith('/mock-images/') || selectedMember.photo_url.startsWith('/assets/')
+                                  ? selectedMember.photo_url
+                                  : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedMember.photo_url}`
+                              } 
+                              alt={selectedMember.name}
+                              className="w-20 h-20 rounded-full object-cover border-2 border-blue-600"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                const fallback = e.target.parentElement.querySelector('.fallback-avatar');
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                            <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center" style={{ display: 'none' }}>
+                              <FaUsers className="w-10 h-10 text-gray-600" />
+                            </div>
+                          </>
+                        ) : (
+                          <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
+                            <FaUsers className="w-10 h-10 text-gray-600" />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-bold text-lg">{selectedMember.name}</p>
+                        <p className="text-sm text-gray-600">{selectedMember.father_name}</p>
+                        <p className="text-xs text-gray-500">{selectedMember.gender}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Membership ID:</span>
+                        <span className="font-mono font-medium">{selectedMember.membership_id}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Phone:</span>
+                        <span>{selectedMember.phone}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Location:</span>
+                        <span>{selectedMember.village}, {selectedMember.district}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">State:</span>
+                        <span>{selectedMember.state}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t text-center">
+                      <p className="text-xs text-gray-500">
+                        Valid from: {new Date(selectedMember.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Actions */}
+              <div>
+                <h4 className="text-md font-semibold text-gray-800 mb-3">Actions</h4>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => handleDownloadIdCard(selectedMember)}
+                    className="w-full flex items-center justify-center px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  >
+                    <FaDownload className="mr-2" />
+                    Download ID Card
+                  </button>
+                  <button
+                    onClick={() => handleResendEmail(selectedMember.id)}
+                    className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  >
+                    <FaEnvelope className="mr-2" />
+                    Send Email with ID Card
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedMember(null);
+                      handleViewDetails(selectedMember.id);
+                    }}
+                    className="w-full flex items-center justify-center px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                  >
+                    <FaEye className="mr-2" />
+                    View Full Member Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 };

@@ -154,6 +154,63 @@ export const getGallery = async () => {
   return { success: true, data: galleryData };
 };
 
+export const getGalleryItems = async () => {
+  await randomDelay();
+  return { success: true, data: galleryData };
+};
+
+export const uploadGalleryItem = async (formData) => {
+  await randomDelay();
+  
+  // Simulate file upload
+  const file = formData.get('file');
+  const title = formData.get('title');
+  const caption = formData.get('caption');
+  const type = formData.get('type');
+  
+  // Create a mock URL for the uploaded file
+  const mockUrl = type === 'image' 
+    ? `/assets/gallery/${file.name || 'uploaded-image.jpg'}`
+    : `/assets/gallery/${file.name || 'uploaded-video.mp4'}`;
+  
+  const newItem = {
+    id: Date.now(),
+    title,
+    caption,
+    type,
+    url: mockUrl
+  };
+  
+  // Update gallery data (in real app, this would be handled by backend)
+  galleryData.push(newItem);
+  
+  return { success: true, data: newItem };
+};
+
+export const updateGalleryItem = async (id, updates) => {
+  await randomDelay();
+  
+  const itemIndex = galleryData.findIndex(item => item.id === parseInt(id));
+  if (itemIndex === -1) {
+    return { success: false, error: 'Gallery item not found' };
+  }
+  
+  galleryData[itemIndex] = { ...galleryData[itemIndex], ...updates };
+  return { success: true, data: galleryData[itemIndex] };
+};
+
+export const deleteGalleryItem = async (id) => {
+  await randomDelay();
+  
+  const itemIndex = galleryData.findIndex(item => item.id === parseInt(id));
+  if (itemIndex === -1) {
+    return { success: false, error: 'Gallery item not found' };
+  }
+  
+  galleryData.splice(itemIndex, 1);
+  return { success: true, message: 'Gallery item deleted successfully' };
+};
+
 // Forms
 export const submitComplaint = async (data) => {
   await randomDelay();

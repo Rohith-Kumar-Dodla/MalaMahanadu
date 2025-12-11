@@ -3,13 +3,46 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Optional
 from app.database import get_db
+from fastapi.responses import FileResponse
 from app.models.member import Member
-from app.schemas.membership import MembershipCreate, MembershipResponse, MembershipRegisterResponse
 from app.utils.idcard_generator import generate_id_card
 from app.utils.email_service import send_membership_email
 import os
 import uuid
-from datetime import datetime, timedelta
+from pydantic import BaseModel, EmailStr
+import datetime
+from datetime import timedelta
+
+# Pydantic models for request/response
+class MembershipRegisterResponse(BaseModel):
+    success: bool
+    membership_id: Optional[str] = None
+    id_card_url: Optional[str] = None
+    message: str
+
+class MembershipResponse(BaseModel):
+    id: int
+    membership_id: str
+    name: str
+    father_name: str
+    gender: str
+    dob: str
+    caste: str
+    aadhar: str
+    phone: str
+    email: str
+    state: str
+    district: str
+    mandal: str
+    village: str
+    address: str
+    status: str
+    photo_url: Optional[str] = None
+    id_card_url: Optional[str] = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
 
 router = APIRouter()
 
@@ -39,6 +72,7 @@ async def register_member(
     gender: str = Form(...),
     dob: str = Form(...),
     caste: str = Form(...),
+    aadhar: str = Form(...),
     phone: str = Form(...),
     email: str = Form(...),
     state: str = Form(...),
@@ -67,6 +101,15 @@ async def register_member(
             return MembershipRegisterResponse(
                 success=False,
                 message="Phone number already exists. Please try with a different phone number."
+            )
+        
+        # Check if Aadhar already exists
+        existing_aadhar = db.query(Member).filter(Member.aadhar == aadhar.replace(" ", "")).first()
+        if existing_aadhar:
+            print(f"Aadhar already exists: {aadhar}")
+            return MembershipRegisterResponse(
+                success=False,
+                message="Aadhar card number already exists. Please try with a different Aadhar number."
             )
         
         print("Validations passed, proceeding with registration")
@@ -100,6 +143,7 @@ async def register_member(
             gender=gender,
             dob=dob,
             caste=caste,
+            aadhar=aadhar.replace(" ", ""),
             phone=phone,
             email=email,
             state=state,
@@ -129,16 +173,22 @@ async def register_member(
         
         print(f"Successfully registered member: {membership_id}")
         
-        # Generate ID card
+        # Generate ID card with photo if available
+        photo_path = None
+        if photo_url:
+            # Convert URL to file path
+            photo_path = photo_url.replace("/static/", "app/static/")
+        
         id_card_path = generate_id_card(
             membership_id=membership_id,
             name=fullName,
             village=village,
-            district=district
+            district=district,
+            photo_path=photo_path
         )
         
         # Update member with ID card URL
-        new_member.id_card_url = f"/static/id_cards/{os.path.basename(id_card_path)}"
+        new_member.id_card_url = f"/static/idcards/{os.path.basename(id_card_path)}"
         db.commit()
         
         # Send welcome email (optional)
@@ -167,6 +217,28 @@ async def register_member(
             message=f"Registration failed: {str(e)}"
         )
 
+@router.get("/idcard/{filename}")
+async def get_id_card(filename: str):
+    """Serve ID card with proper MIME type"""
+    id_card_path = f"app/static/idcards/{filename}"
+    
+    if not os.path.exists(id_card_path):
+        raise HTTPException(status_code=404, detail="ID card not found")
+    
+    # Determine MIME type based on file extension
+    if filename.lower().endswith('.png'):
+        media_type = 'image/png'
+    elif filename.lower().endswith('.pdf'):
+        media_type = 'application/pdf'
+    else:
+        media_type = 'application/octet-stream'
+    
+    return FileResponse(
+        id_card_path,
+        media_type=media_type,
+        filename=filename
+    )
+
 @router.get("/{membership_id}", response_model=MembershipResponse)
 async def get_member(membership_id: str, db: Session = Depends(get_db)):
     member = db.query(Member).filter(Member.membership_id == membership_id).first()
@@ -190,7 +262,8 @@ async def get_all_members(
             Member.name.ilike(f"%{search}%") |
             Member.phone.ilike(f"%{search}%") |
             Member.email.ilike(f"%{search}%") |
-            Member.membership_id.ilike(f"%{search}%")
+            Member.membership_id.ilike(f"%{search}%") |
+            Member.aadhar.ilike(f"%{search}%")
         )
     
     if state:

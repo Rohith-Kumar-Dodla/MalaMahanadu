@@ -71,14 +71,14 @@ const DistrictPresidents = () => {
       />
       
       {/* Hero Section */}
-      <div className="relative h-64 bg-primary-600">
+      <div className="relative h-80 lg:h-96 xl:h-[32rem] bg-primary-600">
         <div className="absolute inset-0 bg-black bg-opacity-40" />
         <div className="relative h-full flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <div className="text-center px-4 max-w-6xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 lg:mb-8">
               District Presidents
             </h1>
-            <p className="text-xl text-white max-w-2xl mx-auto px-4">
+            <p className="text-xl md:text-2xl lg:text-3xl text-white max-w-4xl mx-auto leading-relaxed">
               Connect with your district leadership
             </p>
           </div>
@@ -106,7 +106,7 @@ const DistrictPresidents = () => {
       </section>
 
       {/* District Presidents Grid */}
-      <section className="py-16 bg-white">
+      <section className="py-16 lg:py-20 bg-white">
         <div className="container mx-auto px-4">
           {districts.length === 0 ? (
             <div className="text-center py-12">
@@ -119,7 +119,7 @@ const DistrictPresidents = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-10 xl:gap-12">
               {districts.map((district) => (
                 <DistrictCard key={district.id} district={district} />
               ))}

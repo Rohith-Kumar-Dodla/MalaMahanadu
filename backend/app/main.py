@@ -1,14 +1,16 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.routes import membership, donations, complaints
+from app.routes import membership, donations, complaints, gallery
 from app.database import engine
-from app.models import member, donation, complaint
+from app.models import member, donation, complaint, gallery as gallery_model, admin_user
 
 # Create all tables
 member.Base.metadata.create_all(bind=engine)
 donation.Base.metadata.create_all(bind=engine)
 complaint.Base.metadata.create_all(bind=engine)
+gallery_model.Base.metadata.create_all(bind=engine)
+admin_user.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Mala Mahanadu Membership API",
@@ -27,11 +29,13 @@ app.add_middleware(
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static/gallery", StaticFiles(directory="uploads/gallery"), name="gallery")
 
 # Include routers
 app.include_router(membership.router, prefix="/api/membership", tags=["membership"])
 app.include_router(donations.router)
 app.include_router(complaints.router)
+app.include_router(gallery.router, prefix="/api/gallery", tags=["gallery"])
 
 @app.get("/")
 async def root():

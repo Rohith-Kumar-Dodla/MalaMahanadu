@@ -8,8 +8,8 @@ const Hero = ({ title, subtitle, backgroundImage, showCTA = true }) => {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex flex-col xl:flex-row items-center justify-between gap-6 xs:gap-8 sm:gap-8 lg:gap-12 xl:gap-16">
             {/* Left Side - Full Ambedkar Image */}
-            <div className="flex-shrink-0 order-2 xl:order-1 w-full xl:w-auto">
-              <div className="relative flex justify-center xl:justify-start">
+            <div className="flex-shrink-0 order-2 xl:order-1 w-full xl:w-auto flex justify-center xl:justify-start">
+              <div className="relative">
                 {/* Glow effect */}
                 <div className="absolute inset-0 bg-gold-400/20 rounded-lg blur-xl xs:blur-2xl lg:blur-3xl transform scale-90 xs:scale-95 xl:scale-105"></div>
                 

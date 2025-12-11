@@ -13,7 +13,7 @@ class Donation(Base):
     payment_method = Column(String(50), nullable=False)
     transaction_id = Column(String(255), nullable=False)
     notes = Column(Text, nullable=True)
-    donation_date = Column(DateTime(timezone=True), nullable=False)
+    donation_date = Column(DateTime, nullable=False)
     status = Column(String(20), default='pending')  # pending, verified, acknowledged
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())

@@ -8,6 +8,7 @@ class MembershipCreate(BaseModel):
     gender: str
     dob: str
     caste: str
+    aadhar: str
     phone: str
     email: EmailStr
     state: str
@@ -24,6 +25,7 @@ class MembershipResponse(BaseModel):
     gender: str
     dob: str
     caste: str
+    aadhar: str
     phone: str
     email: str
     state: str

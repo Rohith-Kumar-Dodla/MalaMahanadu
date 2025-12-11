@@ -70,7 +70,7 @@ const MemberDashboard = () => {
               district: 'Hyderabad',
               state: 'Telangana',
               status: 'pending',
-              photo_url: '/static/photos/test_member.jpg',
+              photo_url: '/mock-images/chennaiah.jpg',
               created_at: '2025-01-01T10:00:00Z'
             },
             {
@@ -85,7 +85,7 @@ const MemberDashboard = () => {
               district: 'Warangal',
               state: 'Telangana',
               status: 'pending',
-              photo_url: '/static/photos/test_member2.jpg',
+              photo_url: '/mock-images/burgula-venkateswarlu.jpg',
               created_at: '2025-01-02T11:00:00Z'
             }
           ];
@@ -111,7 +111,7 @@ const MemberDashboard = () => {
 
   const handleExportCSV = () => {
     // Create CSV content
-    const headers = ['Membership ID', 'Name', 'Father Name', 'Gender', 'Phone', 'Email', 'Village', 'District', 'State', 'Registration Date'];
+    const headers = ['Membership ID', 'Name', 'Father Name', 'Gender', 'Aadhar Card', 'Phone', 'Email', 'Village', 'District', 'State', 'Registration Date'];
     const csvContent = [
       headers.join(','),
       ...members.map(member => [
@@ -119,6 +119,7 @@ const MemberDashboard = () => {
         member.name,
         member.father_name,
         member.gender,
+        member.aadhar ? `${member.aadhar.slice(0, 4)} ${member.aadhar.slice(4, 8)} ${member.aadhar.slice(8)}` : '',
         member.phone,
         member.email,
         member.village,
@@ -236,55 +237,185 @@ const MemberDashboard = () => {
     // Don't call fetchMembers() here to avoid overwriting local changes
   };
 
+  // Helper function to convert image to data URL
+  const getImageDataUrl = async (imageUrl) => {
+    if (!imageUrl) return imageUrl;
+    
+    try {
+      // For local images, construct the full URL
+      const fullUrl = imageUrl.startsWith('http') ? imageUrl : window.location.origin + imageUrl;
+      const response = await fetch(fullUrl);
+      const blob = await response.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Failed to convert image to data URL:', error);
+      return imageUrl;
+    }
+  };
+
   const handleDownloadIDCard = async (memberId, format) => {
+    try {
+      // Find the member
+      const selectedMember = members.find(m => m.id === memberId);
+      if (!selectedMember) {
+        alert('Member not found');
+        return;
+      }
+
+      // Get the ID card URL from the member data or generate it
+      let idCardUrl = selectedMember.id_card_url;
+      
+      // If no ID card URL exists, try to construct it
+      if (!idCardUrl) {
+        idCardUrl = `/static/idcards/ID_${selectedMember.membership_id.replace('-', '_')}.png`;
+      }
+
+      if (format === 'png') {
+        // Download the PNG directly from server
+        try {
+          const response = await fetch(idCardUrl);
+          if (!response.ok) {
+            throw new Error('ID card not found on server');
+          }
+          
+          const blob = await response.blob();
+          
+          // Ensure we have the correct MIME type
+          const mimeType = blob.type || 'image/png';
+          const correctedBlob = new Blob([blob], { type: mimeType });
+          
+          const url = window.URL.createObjectURL(correctedBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ID-Card-${selectedMember.membership_id}.png`;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          
+          // Clean up the URL after a short delay
+          setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+          }, 100);
+          
+          console.log('ID Card downloaded successfully');
+        } catch (fetchError) {
+          console.error('Error fetching ID card from server:', fetchError);
+          // Fallback to html2canvas method
+          await downloadWithHtml2Canvas(memberId, format, selectedMember);
+        }
+      } else if (format === 'pdf') {
+        // Try to download PDF version first
+        try {
+          const pdfUrl = idCardUrl.replace('.png', '.pdf');
+          const response = await fetch(pdfUrl);
+          if (response.ok) {
+            const blob = await response.blob();
+            
+            // Ensure we have the correct MIME type
+            const mimeType = blob.type || 'application/pdf';
+            const correctedBlob = new Blob([blob], { type: mimeType });
+            
+            const url = window.URL.createObjectURL(correctedBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ID-Card-${selectedMember.membership_id}.pdf`;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Clean up the URL after a short delay
+            setTimeout(() => {
+              window.URL.revokeObjectURL(url);
+            }, 100);
+            
+            console.log('PDF downloaded successfully');
+            return;
+          }
+        } catch (pdfError) {
+          console.log('PDF not available, converting PNG to PDF');
+        }
+        
+        // Fallback: convert PNG to PDF
+        await downloadWithHtml2Canvas(memberId, format, selectedMember);
+      }
+    } catch (error) {
+      console.error('Error downloading ID card:', error);
+      alert('Failed to download ID card. Please try again.');
+    }
+  };
+
+  const downloadWithHtml2Canvas = async (memberId, format, selectedMember) => {
     try {
       // Create ID card element for download
       const idCardElement = document.getElementById(`id-card-${memberId}`);
       if (!idCardElement) {
-        alert('ID Card not found');
+        alert('ID Card preview not found');
         return;
       }
 
-      if (format === 'png') {
-        // Use html2canvas library to convert to PNG
-        const html2canvas = (await import('html2canvas')).default;
-        const canvas = await html2canvas(idCardElement, {
-          scale: 2,
-          backgroundColor: '#ffffff'
+      // Convert image to data URL if it's a local image
+      if (selectedMember?.photo_url) {
+        const dataUrl = await getImageDataUrl(selectedMember.photo_url);
+        const imgElements = idCardElement.querySelectorAll('img');
+        imgElements.forEach(img => {
+          const currentSrc = img.src;
+          const expectedSrc = selectedMember.photo_url.startsWith('http') 
+            ? selectedMember.photo_url 
+            : window.location.origin + selectedMember.photo_url;
+          
+          if (currentSrc === expectedSrc || currentSrc.includes(selectedMember.photo_url)) {
+            img.src = dataUrl;
+          }
         });
-        
+      }
+
+      // Wait a moment for images to load
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(idCardElement, {
+        scale: 2,
+        backgroundColor: '#0A1A3F',
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        foreignObjectRendering: false,
+        imageTimeout: 15000
+      });
+      
+      if (format === 'png') {
         // Convert to blob and download
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `ID-Card-${memberId}.png`;
+          a.download = `ID-Card-${selectedMember.membership_id}.png`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
-        });
+        }, 'image/png', 0.95);
       } else if (format === 'pdf') {
         // Use jsPDF library to convert to PDF
         const jsPDF = (await import('jspdf')).default;
-        const html2canvas = (await import('html2canvas')).default;
         
-        const canvas = await html2canvas(idCardElement, {
-          scale: 2,
-          backgroundColor: '#ffffff'
-        });
-        
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/png', 0.95);
         const pdf = new jsPDF('L', 'mm', [85.6, 53.98]); // Credit card size
         const imgWidth = 85.6;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        pdf.save(`ID-Card-${memberId}.pdf`);
+        pdf.save(`ID-Card-${selectedMember.membership_id}.pdf`);
       }
     } catch (error) {
-      console.error('Error downloading ID card:', error);
-      alert('Failed to download ID card. Please try again.');
+      console.error('Error in html2canvas fallback:', error);
+      alert('Failed to download ID card. Please try regenerating the ID card first.');
     }
   };
 
@@ -293,7 +424,8 @@ const MemberDashboard = () => {
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.membership_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.phone.includes(searchTerm) ||
-      member.email.toLowerCase().includes(searchTerm.toLowerCase());
+      member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (member.aadhar && member.aadhar.includes(searchTerm.replace(/\s/g, '')));
     
     const matchesState = !filterState || member.state === filterState;
     
@@ -375,7 +507,7 @@ const MemberDashboard = () => {
                 </div>
                 <input
                   type="text"
-                  placeholder="Search by name, ID, phone, or email..."
+                  placeholder="Search by name, ID, phone, email, or Aadhar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="block w-full pl-8 xs:pl-9 sm:pl-9 sm:pl-10 pr-2 xs:pr-3 sm:pr-3 sm:pr-4 py-2 xs:py-2 sm:py-2 sm:py-3 text-xs xs:text-sm sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
@@ -714,6 +846,12 @@ const MemberDashboard = () => {
                       <p className="font-medium text-xs xs:text-sm">{selectedMember.gender}</p>
                     </div>
                     <div>
+                      <p className="text-xs xs:text-sm text-gray-600">Aadhar Card</p>
+                      <p className="font-medium font-mono text-xs xs:text-sm">
+                        {selectedMember.aadhar ? `${selectedMember.aadhar.slice(0, 4)} ${selectedMember.aadhar.slice(4, 8)} ${selectedMember.aadhar.slice(8)}` : 'N/A'}
+                      </p>
+                    </div>
+                    <div>
                       <p className="text-xs xs:text-sm text-gray-600">Phone</p>
                       <p className="font-medium text-xs xs:text-sm">{selectedMember.phone}</p>
                     </div>
@@ -792,31 +930,40 @@ const MemberDashboard = () => {
                       <div className="flex items-center space-x-4 mb-4">
                         <div className="relative">
                           {selectedMember.photo_url && 
-                           !selectedMember.photo_url.includes('photo_001.jpg') && 
-                           !selectedMember.photo_url.includes('photo_002.jpg') &&
                            selectedMember.photo_url.trim() !== '' ? (
-                            <img 
-                              src={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedMember.photo_url}`} 
-                              alt={selectedMember.name}
-                              className="w-20 h-20 rounded-full object-cover border-2 border-blue-600"
-                              onError={(e) => {
-                                console.log('Image failed to load:', e.target.src);
-                                e.target.style.display = 'none';
-                                e.target.parentElement.querySelector('.fallback-avatar').style.display = 'flex';
-                              }}
-                              onLoad={() => {
-                                console.log('Image loaded successfully:', e.target.src);
-                              }}
-                            />
+                            <>
+                              <img 
+                                src={selectedMember.photo_url.startsWith('http') 
+                                  ? selectedMember.photo_url 
+                                  : selectedMember.photo_url.startsWith('/mock-images/') || selectedMember.photo_url.startsWith('/assets/')
+                                    ? selectedMember.photo_url
+                                    : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedMember.photo_url}`
+                                } 
+                                alt={selectedMember.name}
+                                className="w-20 h-20 rounded-full object-cover border-2 border-blue-600"
+                                onError={(e) => {
+                                  console.log('Image failed to load:', e.target.src);
+                                  console.log('Selected Member:', selectedMember);
+                                  console.log('Original Photo URL:', selectedMember.photo_url);
+                                  e.target.style.display = 'none';
+                                  const fallback = e.target.parentElement.querySelector('.fallback-avatar');
+                                  if (fallback) fallback.style.display = 'flex';
+                                }}
+                                onLoad={(e) => {
+                                  console.log('Image loaded successfully:', e.target.src);
+                                  console.log('Selected Member:', selectedMember);
+                                  console.log('Original Photo URL:', selectedMember.photo_url);
+                                }}
+                              />
+                              <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center" style={{ display: 'none' }}>
+                                <FaUsers className="w-10 h-10 text-gray-600" />
+                              </div>
+                            </>
                           ) : (
-                            console.log('Using fallback avatar. Photo URL:', selectedMember.photo_url)
+                            <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
+                              <FaUsers className="w-10 h-10 text-gray-600" />
+                            </div>
                           )}
-                          <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center" style={{ display: (selectedMember.photo_url && 
-                           !selectedMember.photo_url.includes('photo_001.jpg') && 
-                           !selectedMember.photo_url.includes('photo_002.jpg') &&
-                           selectedMember.photo_url.trim() !== '') ? 'none' : 'flex' }}>
-                            <FaUsers className="w-10 h-10 text-gray-600" />
-                          </div>
                         </div>
                         <div>
                           <p className="font-bold text-lg">{selectedMember.name}</p>

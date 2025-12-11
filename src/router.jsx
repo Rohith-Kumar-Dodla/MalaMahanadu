@@ -19,7 +19,7 @@ import MemberDashboard from './pages/admin/MemberDashboard';
 import MemberDetails from './pages/admin/MemberDetails';
 import DonationsManagement from './pages/admin/DonationsManagement';
 import ComplaintsManagement from './pages/admin/ComplaintsManagement';
-import GalleryAdmin from './pages/admin/GalleryAdmin';
+import GalleryManagement from './pages/admin/GalleryManagement';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import NotFound from './pages/NotFound';
@@ -129,7 +129,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'gallery',
-        element: <GalleryAdmin />
+        element: <GalleryManagement />
       }
     ]
   }

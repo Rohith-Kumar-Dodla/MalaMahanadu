@@ -9,6 +9,7 @@ const Membership = () => {
     gender: '',
     dob: '',
     caste: '',
+    aadhar: '',
     phone: '',
     email: '',
     state: '',
@@ -71,6 +72,12 @@ const Membership = () => {
     
     if (!formData.caste.trim()) {
       newErrors.caste = 'Caste is required';
+    }
+    
+    if (!formData.aadhar.trim()) {
+      newErrors.aadhar = 'Aadhar card number is required';
+    } else if (!/^\d{12}$/.test(formData.aadhar.replace(/\s/g, ''))) {
+      newErrors.aadhar = 'Please enter a valid 12-digit Aadhar card number';
     }
     
     if (!formData.phone.trim()) {
@@ -376,6 +383,28 @@ const Membership = () => {
                       />
                       {errors.caste && (
                         <p className="mt-1 text-sm text-red-600">{errors.caste}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Aadhar Card Number *
+                      </label>
+                      <input
+                        type="text"
+                        name="aadhar"
+                        value={formData.aadhar}
+                        onChange={(e) => setFormData({...formData, aadhar: e.target.value})}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
+                          errors.aadhar ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="1234 5678 9012"
+                        maxLength={14}
+                      />
+                      {errors.aadhar && (
+                        <p className="mt-1 text-sm text-red-600">{errors.aadhar}</p>
                       )}
                     </div>
                   </div>

@@ -5,12 +5,12 @@ from datetime import datetime
 
 def generate_id_card(membership_id: str, name: str, village: str, district: str, photo_path: str = None) -> str:
     """
-    Generate ID card with Deep Blue (#0A1A3F), Gold (#F5C518), and White (#FFFFFF) theme
+    Generate professional ID card with Mala Mahanadu branding
     """
-    # ID Card dimensions (standard PVC card size)
+    # ID Card dimensions (credit card size)
     width, height = 1016, 638  # 3.375 x 2.125 inches at 300 DPI
     
-    # Create new image with Deep Blue background
+    # Create new image with professional background
     img = Image.new('RGB', (width, height), '#0A1A3F')
     draw = ImageDraw.Draw(img)
     
@@ -26,7 +26,7 @@ def generate_id_card(membership_id: str, name: str, village: str, district: str,
         regular_font = ImageFont.load_default()
         small_font = ImageFont.load_default()
     
-    # Add gold header
+    # Add golden header
     header_height = 120
     draw.rectangle([0, 0, width, header_height], fill='#F5C518')
     
@@ -38,21 +38,27 @@ def generate_id_card(membership_id: str, name: str, village: str, district: str,
     photo_size = 200
     photo_x, photo_y = 50, 150
     
+    # Draw photo frame
+    draw.rectangle([photo_x, photo_y, photo_x + photo_size, photo_y + photo_size], 
+                   fill='white', outline='#F5C518', width=3)
+    
     if photo_path and os.path.exists(photo_path):
         try:
             photo = Image.open(photo_path)
+            # Crop to square and resize
+            min_dim = min(photo.size)
+            left = (photo.size[0] - min_dim) // 2
+            top = (photo.size[1] - min_dim) // 2
+            photo = photo.crop((left, top, left + min_dim, top + min_dim))
             photo = photo.resize((photo_size, photo_size))
             img.paste(photo, (photo_x, photo_y))
-        except:
-            # Fallback to placeholder if photo loading fails
-            draw.rectangle([photo_x, photo_y, photo_x + photo_size, photo_y + photo_size], 
-                         fill='white', outline='#F5C518', width=3)
+        except Exception as e:
+            print(f"Error loading photo: {e}")
+            # Fallback to placeholder
             draw.text((photo_x + photo_size//2, photo_y + photo_size//2), "PHOTO", 
                      font=regular_font, fill='#0A1A3F', anchor='mm')
     else:
         # Photo placeholder
-        draw.rectangle([photo_x, photo_y, photo_x + photo_size, photo_y + photo_size], 
-                     fill='white', outline='#F5C518', width=3)
         draw.text((photo_x + photo_size//2, photo_y + photo_size//2), "PHOTO", 
                  font=regular_font, fill='#0A1A3F', anchor='mm')
     
@@ -80,30 +86,33 @@ def generate_id_card(membership_id: str, name: str, village: str, district: str,
     valid_from = datetime.now().strftime("%d-%m-%Y")
     draw.text((details_x, details_y), f"Valid From: {valid_from}", font=regular_font, fill='#F5C518')
     
-    # Add QR Code (positioned above "Issued:" text)
+    # Add QR Code
     qr_size = 100
     qr_x = width - qr_size - 50
-    qr_y = height - 140  # Positioned above the "Issued:" text
+    qr_y = height - 140
     
-    # Create QR code with verification URL that links to the digital ID
-    verification_url = f"https://malamahanadu.org/verify/{membership_id}"
-    qr = qrcode.QRCode(version=1, box_size=10, border=2)
-    qr.add_data(verification_url)
-    qr.make(fit=True)
-    qr_img = qr.make_image(fill_color='white', back_color='#0A1A3F')
-    qr_img = qr_img.resize((qr_size, qr_size))
-    img.paste(qr_img, (qr_x, qr_y))
+    try:
+        # Create QR code with verification URL
+        verification_url = f"https://malamahanadu.org/verify/{membership_id}"
+        qr = qrcode.QRCode(version=1, box_size=10, border=2)
+        qr.add_data(verification_url)
+        qr.make(fit=True)
+        qr_img = qr.make_image(fill_color='white', back_color='#0A1A3F')
+        qr_img = qr_img.resize((qr_size, qr_size))
+        img.paste(qr_img, (qr_x, qr_y))
+        
+        # Add "Scan to Verify" text
+        draw.text((qr_x + qr_size//2, qr_y + qr_size + 8), "Scan to Verify", 
+                 font=small_font, fill='#F5C518', anchor='mm')
+    except Exception as e:
+        print(f"Error generating QR code: {e}")
     
-    # Add "Scan to Verify" text
-    draw.text((qr_x + qr_size//2, qr_y + qr_size + 8), "Scan to Verify", 
-             font=small_font, fill='#F5C518', anchor='mm')
-    
-    # Add signature line (moved down to accommodate QR code)
+    # Add signature line
     signature_y = height - 60
     draw.line([50, signature_y, 250, signature_y], fill='#F5C518', width=2)
     draw.text((50, signature_y + 10), "Authorized Signature", font=small_font, fill='white')
     
-    # Add issue date (positioned below QR code)
+    # Add issue date
     issue_date = datetime.now().strftime("%B %d, %Y")
     draw.text((qr_x + qr_size//2, signature_y + 15), f"Issued: {issue_date}", 
              font=small_font, fill='#F5C518', anchor='mm')
@@ -112,10 +121,16 @@ def generate_id_card(membership_id: str, name: str, village: str, district: str,
     idcards_dir = "app/static/idcards"
     os.makedirs(idcards_dir, exist_ok=True)
     
-    # Save the ID card
+    # Save the ID card with proper format settings
     filename = f"ID_{membership_id.replace('-', '_')}.png"
     filepath = os.path.join(idcards_dir, filename)
-    img.save(filepath, 'PNG')
+    
+    # Ensure image is in RGB mode for maximum compatibility
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    
+    # Save with high quality and proper PNG settings
+    img.save(filepath, 'PNG', quality=95, optimize=True, dpi=(300, 300))
     
     # Also create PDF version
     try:

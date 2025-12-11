@@ -5,17 +5,32 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const apiCall = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
   
+  // Debug: log request details
+  console.log('API Call:', endpoint, options.method || 'GET');
+  if (options.body instanceof FormData) {
+    console.log('Request body is FormData with entries:');
+    for (let [key, value] of options.body.entries()) {
+      console.log(`  ${key}:`, value instanceof File ? `File(${value.name}, ${value.size} bytes)` : value);
+    }
+  } else {
+    console.log('Request body:', options.body);
+  }
+  
   const defaultOptions = {
     headers: {
       'Content-Type': 'application/json',
     },
   };
 
+  // For FormData, don't set Content-Type - let browser set it automatically
+  const isFormData = options.body instanceof FormData;
+  const defaultHeaders = isFormData ? {} : { 'Content-Type': 'application/json' };
+
   const config = {
     ...defaultOptions,
     ...options,
     headers: {
-      ...defaultOptions.headers,
+      ...defaultHeaders,
       ...options.headers,
     },
   };
@@ -25,7 +40,8 @@ const apiCall = async (endpoint, options = {}) => {
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+      console.error('API Error Details:', errorData);
+      throw new Error(JSON.stringify(errorData.detail || errorData) || `HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
@@ -142,6 +158,50 @@ export const getMemberStats = async () => {
 
 export const updateMemberStatus = async (memberId, status) => {
   return apiCall(`/api/membership/${memberId}/status?status=${status}`, {
+    method: 'PATCH',
+  });
+};
+
+// Gallery API
+export const getGalleryItems = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  return apiCall(`/api/gallery/?${queryString}`);
+};
+
+export const getGalleryItem = async (id) => {
+  return apiCall(`/api/gallery/${id}`);
+};
+
+export const uploadGalleryItem = async (formData) => {
+  console.log('API: uploadGalleryItem called with FormData');
+  console.log('FormData entries count:', formData.entries ? Array.from(formData.entries()).length : 'No entries method');
+  
+  return apiCall('/api/gallery/', {
+    method: 'POST',
+    body: formData,
+    headers: {}, // Let browser set Content-Type for FormData
+  });
+};
+
+export const updateGalleryItem = async (id, updateData) => {
+  return apiCall(`/api/gallery/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updateData),
+  });
+};
+
+export const deleteGalleryItem = async (id) => {
+  return apiCall(`/api/gallery/${id}`, {
+    method: 'DELETE',
+  });
+};
+
+export const getGalleryStats = async () => {
+  return apiCall('/api/gallery/stats');
+};
+
+export const toggleGalleryItemActive = async (id) => {
+  return apiCall(`/api/gallery/${id}/toggle-active`, {
     method: 'PATCH',
   });
 };

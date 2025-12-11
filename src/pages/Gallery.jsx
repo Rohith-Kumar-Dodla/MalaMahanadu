@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaImages, FaSpinner, FaFilter } from 'react-icons/fa';
 import GalleryGrid from '../components/GalleryGrid';
 import SeoHead from '../components/SeoHead';
-import { getGallery } from '../api/mockApi';
+import { getGalleryItems } from '../api/mockApi';
 
 const Gallery = () => {
   const [galleryItems, setGalleryItems] = useState([]);
@@ -15,7 +15,7 @@ const Gallery = () => {
     const fetchGallery = async () => {
       try {
         setLoading(true);
-        const response = await getGallery();
+        const response = await getGalleryItems();
         
         if (response.success) {
           setGalleryItems(response.data);
@@ -88,14 +88,14 @@ const Gallery = () => {
       />
       
       {/* Hero Section */}
-      <div className="relative h-64 bg-primary-600">
+      <div className="relative h-80 lg:h-96 xl:h-[32rem] bg-primary-600">
         <div className="absolute inset-0 bg-black bg-opacity-40" />
         <div className="relative h-full flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <div className="text-center px-4 max-w-6xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 lg:mb-8">
               Gallery
             </h1>
-            <p className="text-xl text-white max-w-2xl mx-auto px-4">
+            <p className="text-xl md:text-2xl lg:text-3xl text-white max-w-4xl mx-auto leading-relaxed">
               Visual journey of our events and activities
             </p>
           </div>

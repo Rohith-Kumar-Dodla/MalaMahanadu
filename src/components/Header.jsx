@@ -53,7 +53,7 @@ const Header = () => {
               >
                 <item.icon className="h-3 w-3 xs:h-4 xs:w-4 sm:h-4 sm:w-4" />
                 <span className="hidden 2xl:block">{item.name}</span>
-                <span className="xl:hidden 2xl:block text-xs">{item.name.length > 8 ? item.name.split(' ')[0] : item.name}</span>
+                <span className="xl:hidden 2xl:hidden text-xs">{item.name.length > 8 ? item.name.split(' ')[0] : item.name}</span>
               </Link>
             ))}
           </nav>

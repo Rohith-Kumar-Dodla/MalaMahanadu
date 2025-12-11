@@ -18,5 +18,5 @@ class Complaint(Base):
     file_path = Column(String(500), nullable=True)
     status = Column(String(20), default='pending')  # pending, in_progress, resolved, closed
     reference_id = Column(String(50), unique=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())

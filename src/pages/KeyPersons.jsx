@@ -123,14 +123,14 @@ const KeyPersons = () => {
       />
       
       {/* Hero Section */}
-      <div className="relative h-48 sm:h-56 md:h-64 bg-primary-600">
+      <div className="relative h-64 lg:h-80 xl:h-96 bg-primary-600">
         <div className="absolute inset-0 bg-black bg-opacity-40" />
         <div className="relative h-full flex items-center justify-center">
-          <div className="text-center px-4">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-4">
+          <div className="text-center px-4 max-w-6xl">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6">
               Key Persons
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-white max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white max-w-4xl mx-auto leading-relaxed">
               Meet our dedicated leadership team
             </p>
           </div>
@@ -249,13 +249,13 @@ const KeyPersons = () => {
                 </div>
               ) : (
                 /* Desktop Grid View */
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 lg:gap-8">
                   {keyPersons.map((person) => {
                     const IconComponent = getRoleIcon(person.role);
                     return (
                       <div
                         key={person.id}
-                        className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer"
+                        className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer transform hover:scale-105"
                         onClick={() => {
                           setSelectedPerson(person);
                           // Smooth scroll to details section
@@ -268,49 +268,49 @@ const KeyPersons = () => {
                         }}
                       >
                         {/* Photo */}
-                        <div className="relative aspect-[3/4] sm:aspect-[2/3] overflow-hidden">
+                        <div className="relative aspect-[3/4] lg:aspect-[2/3] overflow-hidden">
                           <img
                             src={person.photo}
                             alt={person.name}
-                            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-500"
                             onError={(e) => {
                               e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMjBweDsgZmlsbDogIzlDQTNBRjsiPlBob3RvPC90ZXh0Pgo8L3N2Zz4K';
                             }}
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
 
                         {/* Content */}
-                        <div className="p-4 sm:p-6">
+                        <div className="p-4 md:p-5 lg:p-6">
                           {/* Icon and Role */}
-                          <div className="flex items-center justify-center mb-3 sm:mb-4">
-                            <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-full">
-                              <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-primary-600" />
+                          <div className="flex items-center justify-center mb-3 md:mb-4">
+                            <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-primary-100 rounded-full">
+                              <IconComponent className="h-5 w-5 md:h-6 md:w-6 text-primary-600" />
                             </div>
                           </div>
 
                           {/* Name and Role */}
-                          <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1 sm:mb-2 text-center">
+                          <h3 className="text-base md:text-lg lg:text-xl font-bold text-gray-900 mb-2 lg:mb-3 text-center">
                             {person.name}
                           </h3>
-                          <p className="text-primary-600 font-medium text-center mb-3 sm:mb-4 text-sm sm:text-base">
+                          <p className="text-primary-600 font-medium text-center mb-3 lg:mb-4 text-sm md:text-base">
                             {person.role}
                           </p>
 
                           {/* Bio */}
-                          <p className="text-gray-600 text-xs sm:text-sm leading-relaxed text-center line-clamp-3">
+                          <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed text-center line-clamp-3">
                             {person.bio}
                           </p>
 
                           {/* Contact Actions */}
-                          <div className="mt-4 sm:mt-6 flex justify-center">
+                          <div className="mt-4 lg:mt-6 flex justify-center">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 // In a real app, this would open a contact form or email client
                                 console.log('Contact:', person.name);
                               }}
-                              className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-md transition-colors text-xs sm:text-sm"
+                              className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 md:px-4 lg:px-5 rounded-lg transition-colors text-xs sm:text-sm md:text-base"
                               title="Contact"
                             >
                               <FaEnvelope className="h-3 w-3 sm:h-4 sm:w-4" />
