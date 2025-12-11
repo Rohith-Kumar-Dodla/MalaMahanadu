@@ -12,6 +12,27 @@ const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
+  const keyPersons = [
+    {
+      name: "Chennaiah",
+      role: "National President",
+      photo: "/mock-images/chennaiah.jpg",
+      description: "G. Chennaiah serves as the National President of Mala Mahanadu, a prominent organisation dedicated to the upliftment, rights"
+    },
+    {
+      name: "Burugula Venkateswarlu",
+      role: "State President", 
+      photo: "/mock-images/burgula-venkateswarlu.jpg",
+      description: "Leading the state-level initiatives and representing our community at the regional level"
+    },
+    {
+      name: "Dr. Manda Ranjith Kumar",
+      role: "State General Secretary",
+      photo: "/mock-images/Manda-Ranjith-Kumar.jpg",
+      description: "Managing organizational operations and coordinating community development programs"
+    }
+  ];
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024); // lg breakpoint
@@ -50,27 +71,6 @@ const Home = () => {
 
     fetchData();
   }, []);
-
-  const keyPersons = [
-    {
-      name: "Chennaiah",
-      role: "National President",
-      photo: "/mock-images/chennaiah.jpg",
-      description: "G. Chennaiah serves as the National President of Mala Mahanadu, a prominent organisation dedicated to the upliftment, rights"
-    },
-    {
-      name: "Burugula Venkateswarlu",
-      role: "State President", 
-      photo: "/mock-images/burgula-venkateswarlu.jpg",
-      description: "Leading the state-level initiatives and representing our community at the regional level"
-    },
-    {
-      name: "Dr. Manda Ranjith Kumar",
-      role: "State General Secretary",
-      photo: "/mock-images/Manda-Ranjith-Kumar.jpg",
-      description: "Managing organizational operations and coordinating community development programs"
-    }
-  ];
 
   
   
