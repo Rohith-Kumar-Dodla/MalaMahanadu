@@ -56,8 +56,42 @@ const MemberDashboard = () => {
           setMembers(parsedMembers);
           setTotalPages(Math.ceil(parsedMembers.length / 10));
         } else {
-          setMembers([]);
-          setTotalPages(0);
+          // Add sample data with photo for testing
+          const sampleData = [
+            {
+              id: 1,
+              membership_id: 'MMN-2025-000001',
+              name: 'Rama Rao',
+              father_name: 'Lakshmana Rao',
+              gender: 'Male',
+              phone: '9876543210',
+              email: 'rama@example.com',
+              village: 'Hyderabad',
+              district: 'Hyderabad',
+              state: 'Telangana',
+              status: 'pending',
+              photo_url: '/static/photos/test_member.jpg',
+              created_at: '2025-01-01T10:00:00Z'
+            },
+            {
+              id: 2,
+              membership_id: 'MMN-2025-000002',
+              name: 'Sita Devi',
+              father_name: 'Janaka Rao',
+              gender: 'Female',
+              phone: '9876543211',
+              email: 'sita@example.com',
+              village: 'Warangal',
+              district: 'Warangal',
+              state: 'Telangana',
+              status: 'pending',
+              photo_url: '/static/photos/test_member2.jpg',
+              created_at: '2025-01-02T11:00:00Z'
+            }
+          ];
+          setMembers(sampleData);
+          setTotalPages(Math.ceil(sampleData.length / 10));
+          localStorage.setItem('membersData', JSON.stringify(sampleData));
         }
       } else {
         setMembers([]);
@@ -168,31 +202,25 @@ const MemberDashboard = () => {
     
     try {
       // Update member status immediately in UI for better UX
-      setMembers(prevMembers => 
-        prevMembers.map(member => 
-          member.id === memberId ? { ...member, status } : member
-        )
+      const updatedMembers = members.map(member => 
+        member.id === memberId ? { ...member, status } : member
       );
+      setMembers(updatedMembers);
       
-      // Use the imported API function
+      // Store in localStorage immediately for persistence
+      localStorage.setItem('membersData', JSON.stringify(updatedMembers));
+      
+      // Try to use the imported API function
       await updateMemberStatus(memberId, status);
       
       // Show success message
       alert(`Member ${status} successfully!`);
       
-      // Refresh the data to get updated status
-      fetchMembers();
-      
     } catch (error) {
       console.error('Error updating member status:', error);
       
-      // If backend is not available, store in localStorage for persistence
+      // If backend is not available, keep the local changes
       if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
-        // Store updated status in localStorage
-        const updatedMembers = members.map(member => 
-          member.id === memberId ? { ...member, status } : member
-        );
-        localStorage.setItem('membersData', JSON.stringify(updatedMembers));
         alert(`Member ${status} successfully! (Saved locally)`);
       } else {
         alert(`Failed to ${status} member. Please try again.`);
@@ -205,6 +233,7 @@ const MemberDashboard = () => {
         );
       }
     }
+    // Don't call fetchMembers() here to avoid overwriting local changes
   };
 
   const handleDownloadIDCard = async (memberId, format) => {
@@ -762,18 +791,30 @@ const MemberDashboard = () => {
                       
                       <div className="flex items-center space-x-4 mb-4">
                         <div className="relative">
-                          {selectedMember.photo_url && !selectedMember.photo_url.includes('photo_001.jpg') && !selectedMember.photo_url.includes('photo_002.jpg') ? (
+                          {selectedMember.photo_url && 
+                           !selectedMember.photo_url.includes('photo_001.jpg') && 
+                           !selectedMember.photo_url.includes('photo_002.jpg') &&
+                           selectedMember.photo_url.trim() !== '' ? (
                             <img 
                               src={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedMember.photo_url}`} 
                               alt={selectedMember.name}
                               className="w-20 h-20 rounded-full object-cover border-2 border-blue-600"
                               onError={(e) => {
+                                console.log('Image failed to load:', e.target.src);
                                 e.target.style.display = 'none';
                                 e.target.parentElement.querySelector('.fallback-avatar').style.display = 'flex';
                               }}
+                              onLoad={() => {
+                                console.log('Image loaded successfully:', e.target.src);
+                              }}
                             />
-                          ) : null}
-                          <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center" style={{ display: (selectedMember.photo_url && !selectedMember.photo_url.includes('photo_001.jpg') && !selectedMember.photo_url.includes('photo_002.jpg')) ? 'none' : 'flex' }}>
+                          ) : (
+                            console.log('Using fallback avatar. Photo URL:', selectedMember.photo_url)
+                          )}
+                          <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center" style={{ display: (selectedMember.photo_url && 
+                           !selectedMember.photo_url.includes('photo_001.jpg') && 
+                           !selectedMember.photo_url.includes('photo_002.jpg') &&
+                           selectedMember.photo_url.trim() !== '') ? 'none' : 'flex' }}>
                             <FaUsers className="w-10 h-10 text-gray-600" />
                           </div>
                         </div>
