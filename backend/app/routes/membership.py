@@ -10,8 +10,7 @@ from app.utils.email_service import send_membership_email
 import os
 import uuid
 from pydantic import BaseModel, EmailStr
-import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 # Pydantic models for request/response
 class MembershipRegisterResponse(BaseModel):
@@ -39,7 +38,7 @@ class MembershipResponse(BaseModel):
     status: str
     photo_url: Optional[str] = None
     id_card_url: Optional[str] = None
-    created_at: datetime.datetime
+    created_at: datetime
 
     class Config:
         from_attributes = True
