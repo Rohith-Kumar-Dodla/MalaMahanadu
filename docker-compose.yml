@@ -49,8 +49,8 @@ services:
   # React Frontend
   frontend:
     build:
-      context: ./
-      dockerfile: Dockerfile.frontend
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: malamahanadu_frontend
     restart: unless-stopped
     ports:
