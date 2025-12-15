@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from app.routes import membership, donations, complaints, gallery
 from app.database import engine
 from app.models import member, donation, complaint, gallery as gallery_model, admin_user
+import os
 
 # Create all tables
 member.Base.metadata.create_all(bind=engine)
@@ -25,7 +26,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:3000", 
         "https://deft-kheer-fd3d9b.netlify.app",
-        "*"  # Fallback for development
+        os.getenv("FRONTEND_URL", "http://localhost:3000")
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],

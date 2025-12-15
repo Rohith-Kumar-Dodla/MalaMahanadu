@@ -35,8 +35,8 @@ const Header = () => {
               }}
             />
             <span className="font-bold text-sm xs:text-base sm:text-lg md:text-xl lg:text-xl hidden xs:block">Mala Mahanadu</span>
-            <span className="font-bold text-xs xs:text-sm sm:text-base hidden sm:block lg:hidden">MM</span>
-            <span className="font-bold text-xs sm:hidden">MM</span>
+            <span className="font-bold text-xs xs:text-sm sm:text-base hidden sm:block lg:hidden">Mala Mahanadu</span>
+            <span className="font-bold text-xs sm:hidden">Mala Mahanadu</span>
           </Link>
 
           {/* Desktop Navigation */}
