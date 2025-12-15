@@ -3,7 +3,7 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Copy package files first (better caching)
+# Copy package files first (for caching)
 COPY package.json package-lock.json ./
 
 RUN npm install
@@ -13,7 +13,6 @@ COPY . .
 
 # Build the Vite app
 RUN npm run build
-
 
 # -------- PRODUCTION STAGE --------
 FROM nginx:alpine
