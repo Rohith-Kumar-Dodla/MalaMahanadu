@@ -48,19 +48,10 @@ services:
 
   # React Frontend
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: malamahanadu_frontend
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    environment:
-      - VITE_API_URL=http://backend:8000
-    depends_on:
-      - backend
-    networks:
-      - malamahanadu_network
+  build:
+    context: ./frontend
+    dockerfile: Dockerfile
+
 
 volumes:
   postgres_data:
