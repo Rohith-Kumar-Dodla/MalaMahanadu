@@ -6,9 +6,11 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve with nginx
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
+# Copy nginx config from frontend folder
 COPY nginx.conf /etc/nginx/nginx.conf
+# Copy build output
 COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

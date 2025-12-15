@@ -6,7 +6,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: malamahanadu_backend
     ports:
       - "8000:8000"
     environment:
@@ -18,13 +17,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: malamahanadu_frontend
     ports:
-      - "3000:3000"
+      - "3000:80"
 
   nginx:
     image: nginx:latest
-    container_name: malamahanadu_nginx
     ports:
       - "80:80"
     volumes:
@@ -35,7 +32,6 @@ services:
 
   db:
     image: postgres:15
-    container_name: malamahanadu_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
