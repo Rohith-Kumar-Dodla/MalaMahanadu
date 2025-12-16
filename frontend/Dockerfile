@@ -1,31 +1,26 @@
-# -------- BUILD STAGE --------
+# Stage 1: Build
 FROM node:22-alpine AS build
-
 WORKDIR /app
-
-# Copy package files first (for caching)
 COPY package.json package-lock.json ./
-
-RUN npm install
-
-# Copy the rest of the frontend
+RUN npm ci
 COPY . .
-
-# Build the Vite app
 RUN npm run build
 
-# -------- PRODUCTION STAGE --------
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf
+# Copy build files
+COPY dist /usr/share/nginx/html
 
-# Copy our nginx config
+# Copy custom MIME types
+COPY mime.types /usr/share/nginx/html/mime.types
+
+# Copy main nginx config (this replaces the default)
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copy built frontend files
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copy site config
+COPY default.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+# Fix permissions
+RUN chmod -R 755 /usr/share/nginx/html
 
-CMD ["nginx", "-g", "daemon off;"]

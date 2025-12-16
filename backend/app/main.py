@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from app.routes import membership, donations, complaints, gallery
 from app.database import engine
 from app.models import member, donation, complaint, gallery as gallery_model, admin_user
@@ -54,6 +55,11 @@ class CORSSStaticFiles(StaticFiles):
         
         await super().__call__(scope, receive, send_wrapper)
 
+# Mount frontend static files
+app.mount("/assets", CORSSStaticFiles(directory="dist/assets"), name="assets")
+app.mount("/mock-images", CORSSStaticFiles(directory="dist/mock-images"), name="mock-images")
+
+# Mount existing static files
 app.mount("/static", CORSSStaticFiles(directory="app/static"), name="static")
 app.mount("/static/gallery", CORSSStaticFiles(directory="uploads/gallery"), name="gallery")
 app.mount("/static/photos", CORSSStaticFiles(directory="app/static/photos"), name="photos")
@@ -66,11 +72,21 @@ app.include_router(gallery.router, prefix="/api/gallery", tags=["gallery"])
 
 @app.get("/")
 async def root():
-    return {"message": "Mala Mahanadu Membership API", "version": "1.0.0"}
+    return FileResponse("dist/index.html", media_type="text/html")
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+# SPA fallback - serve index.html for all non-API routes
+@app.get("/{path:path}")
+async def spa_fallback(path: str):
+    # Don't intercept API routes or static files
+    if path.startswith("api/") or path.startswith("static/") or path.startswith("assets/") or path.startswith("mock-images/"):
+        raise HTTPException(status_code=404, detail="Not found")
+    
+    # For all other routes, serve the SPA index.html
+    return FileResponse("dist/index.html", media_type="text/html")
 
 if __name__ == "__main__":
     import uvicorn
