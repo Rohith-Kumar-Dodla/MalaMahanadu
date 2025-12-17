@@ -1,26 +1,14 @@
-# Stage 1: Build
-FROM node:22-alpine AS build
+FROM node:20-alpine
+
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
+
+COPY package*.json ./
+
+# Install all dependencies (including devDependencies)
+RUN npm install
+
 COPY . .
-RUN npm run build
 
-# Stage 2: Serve with Nginx
-FROM nginx:alpine
+EXPOSE 5173
 
-# Copy build files
-COPY dist /usr/share/nginx/html
-
-# Copy custom MIME types
-COPY mime.types /usr/share/nginx/html/mime.types
-
-# Copy main nginx config (this replaces the default)
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Copy site config
-COPY default.conf /etc/nginx/conf.d/default.conf
-
-# Fix permissions
-RUN chmod -R 755 /usr/share/nginx/html
-
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
