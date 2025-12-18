@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_PASSWORD: Rohith_1234
       POSTGRES_DB: malamahanadu
     ports:
       - "5432:5432"
