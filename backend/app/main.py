@@ -27,6 +27,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:3000", 
         "https://deft-kheer-fd3d9b.netlify.app",
+        "https://malamahanadu.org",
         os.getenv("FRONTEND_URL", "http://localhost:3000")
     ],
     allow_credentials=True,
