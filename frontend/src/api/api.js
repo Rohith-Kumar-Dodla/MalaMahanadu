@@ -1,5 +1,6 @@
+import { API_BASE_URL } from '../config/api';
+
 // Real API calls to backend
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://www.malamahanadu.org';
 
 // Helper function for API calls
 const apiCall = async (endpoint, options = {}) => {

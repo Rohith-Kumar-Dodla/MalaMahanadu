@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { getMembers, getMemberStats, updateMemberStatus } from '../../api/api';
 import SeoHead from '../../components/SeoHead';
 import { FaUsers, FaSearch, FaDownload, FaEye, FaEnvelope, FaIdCard, FaFilter, FaSignOutAlt, FaSpinner, FaTimes, FaCheck } from 'react-icons/fa';
@@ -170,7 +171,7 @@ const MemberDashboard = () => {
     e.preventDefault();
     try {
       // API call to send email with attachments
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/send-email-with-attachments`, {
+      const response = await fetch(`${API_BASE_URL}/api/send-email-with-attachments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -343,11 +344,11 @@ const MemberDashboard = () => {
             ? selectedMember.photo_url 
             : selectedMember.photo_url.startsWith('/mock-images/') || selectedMember.photo_url.startsWith('/assets/')
               ? selectedMember.photo_url
-              : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedMember.photo_url}`;
+              : `${API_BASE_URL}${selectedMember.photo_url}`;
         }
         
         // For CORS images, now that CORS is fixed, we can use them
-        if (imageUrl.includes('localhost:8000') || imageUrl.includes('127.0.0.1:8000')) {
+        if (imageUrl.includes('api.malamahanadu.org')) {
           img.src = imageUrl;
           img.style.display = 'block';
           // Hide fallback avatar
@@ -410,8 +411,8 @@ const MemberDashboard = () => {
           clonedDocFallbacks.forEach((avatar, index) => {
             const correspondingImg = clonedDocImages[index];
             if (correspondingImg && correspondingImg.src && 
-                (correspondingImg.src.includes('localhost:8000') || 
-                 correspondingImg.src.includes('127.0.0.1:8000') ||
+                (correspondingImg.src.includes('api.malamahanadu.org') || 
+                 correspondingImg.src.includes('api.malamahanadu.org') ||
                  correspondingImg.src.startsWith('data:') ||
                  correspondingImg.src.includes('/mock-images/') ||
                  correspondingImg.src.includes('/assets/'))) {
@@ -1105,7 +1106,7 @@ const MemberDashboard = () => {
                                   ? selectedMember.photo_url 
                                   : selectedMember.photo_url.startsWith('/mock-images/') || selectedMember.photo_url.startsWith('/assets/')
                                     ? selectedMember.photo_url
-                                    : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedMember.photo_url}`
+                                    : `${API_BASE_URL}${selectedMember.photo_url}`
                                 } 
                                 alt={selectedMember.name}
                                 className="w-20 h-20 rounded-full object-cover border-2 border-blue-600"

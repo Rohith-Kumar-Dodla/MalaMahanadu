@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { API_BASE_URL } from '../config/api';
 import SeoHead from '../components/SeoHead';
 import { FaUserFriends, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCheckCircle, FaSpinner, FaCamera, FaIdCard, FaCalendarAlt, FaUser, FaVenusMars } from 'react-icons/fa';
 
@@ -145,7 +146,7 @@ const Membership = () => {
         }
       });
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/membership/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/membership/register`, {
         method: 'POST',
         body: formDataToSend,
         headers: {} // Let browser set Content-Type for FormData

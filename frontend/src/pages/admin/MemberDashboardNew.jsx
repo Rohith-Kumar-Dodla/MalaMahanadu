@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import SeoHead from '../../components/SeoHead';
 import AdminLayout from '../../components/AdminLayout';
 import { FaUsers, FaSearch, FaDownload, FaEye, FaEnvelope, FaIdCard, FaFilter, FaSpinner } from 'react-icons/fa';
@@ -461,7 +462,7 @@ const MemberDashboardNew = () => {
                                 ? selectedMember.photo_url 
                                 : selectedMember.photo_url.startsWith('/mock-images/') || selectedMember.photo_url.startsWith('/assets/')
                                   ? selectedMember.photo_url
-                                  : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedMember.photo_url}`
+                                  : `${API_BASE_URL}${selectedMember.photo_url}`
                               } 
                               alt={selectedMember.name}
                               className="w-20 h-20 rounded-full object-cover border-2 border-blue-600"
