@@ -45,7 +45,7 @@ const Home = () => {
       id: "5",
       name: "P. Koteswara Rao",
       role: "National Employees Association President",
-      photo: "/mock-images/p.koteshwarroa.jpg",
+      photo: "/mock-images/koteswara-rao.jpg",
       description: "Representing and advocating for employee rights and welfare at national level."
     }
   ];
