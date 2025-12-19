@@ -34,44 +34,24 @@ const Header = () => {
                 e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNGRkYiLz4KPHRleHQgeD0iMjAiIHk9IjI1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgZmlsbDogIzAwMDsiPk1NPC90ZXh0Pgo8L3N2Zz4K';
               }}
             />
-            <span className="font-bold text-sm xs:text-base sm:text-lg md:text-xl lg:text-xl hidden xs:block">Mala Mahanadu</span>
-            <span className="font-bold text-xs xs:text-sm sm:text-base hidden sm:block lg:hidden">Mala Mahanadu</span>
-            <span className="font-bold text-xs sm:hidden">Mala Mahanadu</span>
+            <span className="font-bold text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl">Mala Mahanadu</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-2 lg:space-x-4 xl:space-x-6">
+          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 xl:space-x-4">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center space-x-1 px-2 lg:px-3 xl:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
+                className={`flex items-center space-x-1 px-1 md:px-2 lg:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                   isActive(item.href)
                     ? 'bg-primary-700 text-white'
                     : 'text-primary-100 hover:bg-primary-700 hover:text-white'
                 }`}
               >
                 <item.icon className="h-3 w-3 xs:h-4 xs:w-4 sm:h-4 sm:w-4" />
-                <span className="hidden 2xl:block">{item.name}</span>
-                <span className="xl:hidden 2xl:hidden text-xs">{item.name.length > 8 ? item.name.split(' ')[0] : item.name}</span>
-              </Link>
-            ))}
-          </nav>
-
-          {/* Tablet Navigation */}
-          <nav className="hidden md:flex lg:hidden items-center space-x-1">
-            {navigation.slice(0, 5).map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`flex items-center space-x-1 px-2 py-2 rounded-md text-xs font-medium transition-colors ${
-                  isActive(item.href)
-                    ? 'bg-primary-700 text-white'
-                    : 'text-primary-100 hover:bg-primary-700 hover:text-white'
-                }`}
-              >
-                <item.icon className="h-4 w-4" />
-                <span className="hidden sm:block">{item.name.length > 6 ? item.name.split(' ')[0] : item.name}</span>
+                <span className="hidden lg:block">{item.name}</span>
+                <span className="md:hidden lg:block text-xs">{item.name.length > 8 ? item.name.split(' ')[0] : item.name}</span>
               </Link>
             ))}
           </nav>
