@@ -26,7 +26,7 @@ class GalleryUpdate(BaseModel):
 class GalleryResponse(GalleryBase):
     id: int
     file_name: str
-    url: str
+    file_path: str
     file_size: Optional[int] = None
     mime_type: Optional[str] = None
     created_at: datetime

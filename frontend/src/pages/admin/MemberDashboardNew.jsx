@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config/api';
 import SeoHead from '../../components/SeoHead';
 import AdminLayout from '../../components/AdminLayout';
-import { FaUsers, FaSearch, FaDownload, FaEye, FaEnvelope, FaIdCard, FaFilter, FaSpinner } from 'react-icons/fa';
+import { FaUsers, FaSearch, FaDownload, FaEye, FaWhatsapp, FaIdCard, FaFilter, FaSpinner } from 'react-icons/fa';
 
 const MemberDashboardNew = () => {
   const [members, setMembers] = useState([]);
@@ -36,9 +36,13 @@ const MemberDashboardNew = () => {
         state: filterState
       });
 
-      const response = await fetch(`/api/membership/?${params}`);
+      // Add cache-busting timestamp to force fresh data
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/membership/?${params}&_t=${timestamp}`);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched members data:', data); // Debug log
         setMembers(data);
         // For demo purposes, set total pages
         setTotalPages(Math.ceil(data.length / 10));
@@ -47,7 +51,7 @@ const MemberDashboardNew = () => {
       }
     } catch (error) {
       console.error('Error fetching members:', error);
-      // For demo, show sample data with photo URLs
+      // For demo, show sample data with photo URLs and proper ID structure
       setMembers([
         {
           id: 1,
@@ -123,28 +127,87 @@ const MemberDashboardNew = () => {
   };
 
   const handleViewDetails = (memberId) => {
-    window.location.href = `/admin/members/${memberId}`;
+    // Find the member by numeric ID to get membership_id
+    const member = members.find(m => m.id === memberId);
+    if (member) {
+      window.location.href = `/admin/members/${member.membership_id}`;
+    } else {
+      console.error('Member not found:', memberId);
+    }
   };
 
-  const handleResendEmail = async (memberId) => {
+  const handleSendWhatsApp = async (memberId) => {
     try {
-      const response = await fetch(`/api/membership/resend-email/${memberId}`, {
-        method: 'POST'
-      });
-      
-      if (response.ok) {
-        alert('Email sent successfully');
-      } else {
-        alert('Failed to send email');
+      // Get member details
+      const member = members.find(m => m.id === memberId);
+      if (!member) {
+        alert('Member not found');
+        return;
       }
+
+      // Create WhatsApp message
+      const message = `Dear ${member.name},\n\nThank you for joining Mala Mahanadu! Your membership has been confirmed.\n\nMembership ID: ${member.membership_id}\n\nYour official ID card is attached. Please keep it safe for future reference.\n\nFor any queries, please contact us.\n\nMala Mahanadu Team\nEmpowering Community, Building Future`;
+      
+      // Create WhatsApp URL
+      const whatsappUrl = `https://wa.me/91${member.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+      
+      // Open WhatsApp in new tab
+      window.open(whatsappUrl, '_blank');
+      
     } catch (error) {
-      console.error('Error sending email:', error);
-      alert('Error sending email');
+      console.error('Error sending WhatsApp message:', error);
+      alert('Error sending WhatsApp message');
     }
   };
 
   const handleViewIdCard = (member) => {
     setSelectedMember(member);
+  };
+
+  const handleRegenerateIdCard = async (member) => {
+    if (!member) {
+      alert('Member not found');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/membership/${member.id}/regenerate-idcard`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert('ID card regenerated successfully!');
+        
+        // Update the member's ID card URL in the state
+        setMembers(prevMembers => 
+          prevMembers.map(m => 
+            m.id === member.id 
+              ? { ...m, id_card_url: data.id_card_url }
+              : m
+          )
+        );
+        
+        // Update the selected member as well
+        setSelectedMember(prev => 
+          prev?.id === member.id 
+            ? { ...prev, id_card_url: data.id_card_url }
+            : prev
+        );
+        
+        // Refresh the members list
+        fetchMembers();
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to regenerate ID card: ${errorData.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error regenerating ID card:', error);
+      alert('Failed to regenerate ID card. Please try again.');
+    }
   };
 
   const handleDownloadIdCard = async (member) => {
@@ -353,11 +416,11 @@ const MemberDashboardNew = () => {
                           <FaEye className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleResendEmail(member.id)}
+                          onClick={() => handleSendWhatsApp(member.id)}
                           className="text-green-600 hover:text-green-900"
-                          title="Resend Email"
+                          title="Send WhatsApp"
                         >
-                          <FaEnvelope className="w-4 h-4" />
+                          <FaWhatsapp className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleViewIdCard(member)}
@@ -444,74 +507,50 @@ const MemberDashboardNew = () => {
               {/* ID Card Preview */}
               <div>
                 <h4 className="text-md font-semibold text-gray-800 mb-3">ID Card Preview</h4>
-                <div className="border-2 border-gray-300 rounded-lg p-4 bg-gradient-to-br from-blue-50 to-blue-100">
-                  {/* ID Card Design */}
-                  <div className="bg-white rounded-lg shadow-lg p-6">
-                    <div className="text-center border-b-2 border-blue-600 pb-4 mb-4">
-                      <h2 className="text-xl font-bold text-blue-900">Mala Mahanadu</h2>
-                      <p className="text-sm text-gray-600">Membership Card</p>
-                    </div>
-                    
-                    <div className="flex items-center space-x-4 mb-4">
-                      <div className="relative">
-                        {selectedMember.photo_url && 
-                         selectedMember.photo_url.trim() !== '' ? (
-                          <>
-                            <img 
-                              src={selectedMember.photo_url.startsWith('http') 
-                                ? selectedMember.photo_url 
-                                : selectedMember.photo_url.startsWith('/mock-images/') || selectedMember.photo_url.startsWith('/assets/')
-                                  ? selectedMember.photo_url
-                                  : `${API_BASE_URL}${selectedMember.photo_url}`
-                              } 
-                              alt={selectedMember.name}
-                              className="w-20 h-20 rounded-full object-cover border-2 border-blue-600"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                const fallback = e.target.parentElement.querySelector('.fallback-avatar');
-                                if (fallback) fallback.style.display = 'flex';
-                              }}
-                            />
-                            <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center" style={{ display: 'none' }}>
-                              <FaUsers className="w-10 h-10 text-gray-600" />
-                            </div>
-                          </>
-                        ) : (
-                          <div className="fallback-avatar w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
-                            <FaUsers className="w-10 h-10 text-gray-600" />
-                          </div>
-                        )}
+                <div className="border-2 border-gray-300 rounded-lg p-6 bg-gradient-to-br from-blue-50 to-indigo-100">
+                  {/* Display actual generated ID card */}
+                  <div className="relative">
+                    {selectedMember.id_card_url ? (
+                      <img 
+                        src={selectedMember.id_card_url.startsWith('http') 
+                          ? selectedMember.id_card_url 
+                          : selectedMember.id_card_url.startsWith('/static/')
+                            ? `http://localhost:8000${selectedMember.id_card_url}`
+                            : `${API_BASE_URL}${selectedMember.id_card_url}`
+                        } 
+                        alt={`ID Card for ${selectedMember.name}`}
+                        className="w-full h-auto rounded-lg shadow-lg"
+                        onError={(e) => {
+                          console.error('Failed to load ID card:', selectedMember.id_card_url);
+                          e.target.style.display = 'none';
+                          const fallback = e.target.parentElement.querySelector('.fallback-preview');
+                          if (fallback) fallback.style.display = 'block';
+                        }}
+                        onLoad={() => {
+                          console.log('Successfully loaded ID card for:', selectedMember.name);
+                        }}
+                      />
+                    ) : (
+                      <div className="fallback-preview">
+                        <p className="text-center text-gray-600 mb-4">ID Card not generated yet</p>
+                        <button
+                          onClick={() => handleRegenerateIdCard(selectedMember)}
+                          className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                        >
+                          <FaIdCard className="mr-2" />
+                          Generate ID Card
+                        </button>
                       </div>
-                      <div>
-                        <p className="font-bold text-lg">{selectedMember.name}</p>
-                        <p className="text-sm text-gray-600">{selectedMember.father_name}</p>
-                        <p className="text-xs text-gray-500">{selectedMember.gender}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Membership ID:</span>
-                        <span className="font-mono font-medium">{selectedMember.membership_id}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Phone:</span>
-                        <span>{selectedMember.phone}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Location:</span>
-                        <span>{selectedMember.village}, {selectedMember.district}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">State:</span>
-                        <span>{selectedMember.state}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 pt-4 border-t text-center">
-                      <p className="text-xs text-gray-500">
-                        Valid from: {new Date(selectedMember.created_at).toLocaleDateString()}
-                      </p>
+                    )}
+                    <div className="fallback-preview" style={{ display: 'none' }}>
+                      <p className="text-center text-red-600 mb-4">Failed to load ID card</p>
+                      <button
+                        onClick={() => handleRegenerateIdCard(selectedMember)}
+                        className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                      >
+                        <FaIdCard className="mr-2" />
+                        Regenerate ID Card
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -529,11 +568,18 @@ const MemberDashboardNew = () => {
                     Download ID Card
                   </button>
                   <button
-                    onClick={() => handleResendEmail(selectedMember.id)}
+                    onClick={() => handleRegenerateIdCard(selectedMember)}
                     className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                   >
-                    <FaEnvelope className="mr-2" />
-                    Send Email with ID Card
+                    <FaIdCard className="mr-2" />
+                    Regenerate ID Card
+                  </button>
+                  <button
+                    onClick={() => handleSendWhatsApp(selectedMember.id)}
+                    className="w-full flex items-center justify-center px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  >
+                    <FaWhatsapp className="mr-2" />
+                    Send WhatsApp with ID Card
                   </button>
                   <button
                     onClick={() => {

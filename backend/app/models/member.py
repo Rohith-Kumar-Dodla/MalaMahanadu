@@ -14,7 +14,7 @@ class Member(Base):
     caste = Column(String(100), nullable=False)
     aadhar = Column(String(12), unique=True, nullable=False)
     phone = Column(String(20), nullable=False)
-    email = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=True)
     state = Column(String(100), nullable=False)
     district = Column(String(100), nullable=False)
     mandal = Column(String(100), nullable=False)

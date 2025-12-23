@@ -4,7 +4,7 @@ from typing import Optional
 
 class ComplaintBase(BaseModel):
     name: str
-    email: str
+    email: Optional[str] = None
     phone: str
     address: str
     complaint_type: str

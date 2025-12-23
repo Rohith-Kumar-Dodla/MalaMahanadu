@@ -349,7 +349,7 @@ const MemberDashboard = () => {
         
         // For CORS images, now that CORS is fixed, we can use them
         if (imageUrl.includes('api.malamahanadu.org')) {
-          img.src = imageUrl;
+          img.src = `${imageUrl}&t=${Date.now()}`;
           img.style.display = 'block';
           // Hide fallback avatar
           const parent = img.parentElement;
@@ -361,11 +361,11 @@ const MemberDashboard = () => {
           }
         } else if (imageUrl.startsWith('data:')) {
           // Data URLs are safe to use
-          img.src = imageUrl;
+          img.src = `${imageUrl}&t=${Date.now()}`;
           img.style.display = 'block';
         } else if (imageUrl.startsWith('/mock-images/') || imageUrl.startsWith('/assets/')) {
           // Local assets are safe
-          img.src = imageUrl;
+          img.src = `${imageUrl}&t=${Date.now()}`;
           img.style.display = 'block';
         } else {
           // Other images or no photo, show fallback avatar

@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { FaPlay, FaExpand, FaTimes } from 'react-icons/fa';
+import { API_BASE_URL } from '../config/api';
 
 const GalleryGrid = ({ items }) => {
   const [selectedItem, setSelectedItem] = useState(null);
+
+  const getImageUrl = (path) => {
+    if (path.startsWith('http')) {
+      return path;
+    }
+    return `${API_BASE_URL}${path}`;
+  };
 
   const openModal = (item) => {
     setSelectedItem(item);
@@ -26,26 +34,29 @@ const GalleryGrid = ({ items }) => {
             <div className="aspect-square">
               {item.type === 'video' ? (
                 <div className="relative w-full h-full">
-                  <img
-                    src={item.url.includes('/embed/') 
-                      ? `https://img.youtube.com/vi/${item.url.split('/embed/')[1]}/mqdefault.jpg`
-                      : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMTRweDsgZmlsbDogIzlDQTNBRjsiPlZpZGVvPC90ZXh0Pgo8L3N2Zz4K'
-                    }
-                    alt={item.caption}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  <video
+                    src={getImageUrl(item.file_path)}
+                    className="w-full h-full object-cover"
+                    controls
+                    preload="metadata"
+                    playsInline
+                    muted={false}
                     onError={(e) => {
-                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMTRweDsgZmlsbDogIzlDQTNBRjsiPlZpZGVvPC90ZXh0Pgo8L3N2Zz4K';
+                      console.error('Video error:', e);
+                      e.target.poster = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZm9udCIgc3R5bGU9ImZvbnQtc2l6ZTogMTRweDsgZmlsbDogIzlDQTNBRjsiPlZpZGVvPC90ZXh0Pgo8L3N2Zz4K';
                     }}
-                  />
+                  >
+                    Your browser does not support the video tag.
+                  </video>
                   <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                    <div className="bg-primary-600 rounded-full p-4 md:p-5 lg:p-6 group-hover:scale-110 transition-transform duration-300">
+                    <div className="bg-primary-600 rounded-full p-4 md:p-5 lg:p-6">
                       <FaPlay className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 text-white" />
                     </div>
                   </div>
                 </div>
               ) : (
                 <img
-                  src={item.url}
+                  src={getImageUrl(item.file_path)}
                   alt={item.caption}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   onError={(e) => {
@@ -93,18 +104,18 @@ const GalleryGrid = ({ items }) => {
             {/* Content */}
             {selectedItem.type === 'video' ? (
               <div className="aspect-video">
-                <iframe
-                  src={selectedItem.url}
-                  title={selectedItem.caption}
+                <video
+                  src={getImageUrl(selectedItem.file_path)}
                   className="w-full h-full rounded-lg"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                  controls
+                  preload="metadata"
+                >
+                  Your browser does not support the video tag.
+                </video>
               </div>
             ) : (
               <img
-                src={selectedItem.url}
+                src={getImageUrl(selectedItem.file_path)}
                 alt={selectedItem.caption}
                 className="w-full h-full object-contain rounded-lg max-h-[70vh] sm:max-h-[80vh]"
                 onError={(e) => {

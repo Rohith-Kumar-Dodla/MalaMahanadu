@@ -48,9 +48,9 @@ const Donations = () => {
       newErrors.name = 'Name is required';
     }
     
-    if (!donationForm.email.trim()) {
+    if (donationForm.email && !donationForm.email.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donationForm.email)) {
+    } else if (donationForm.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donationForm.email)) {
       newErrors.email = 'Invalid email format';
     }
     
@@ -337,7 +337,7 @@ const Donations = () => {
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
+                    Email Address
                   </label>
                   <input
                     type="email"

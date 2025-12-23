@@ -4,7 +4,7 @@ from typing import Optional
 
 class DonationBase(BaseModel):
     name: str
-    email: str
+    email: Optional[str] = None
     phone: str
     amount: float
     payment_method: str

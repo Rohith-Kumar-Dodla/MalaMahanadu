@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FaImages, FaVideo, FaUpload, FaTrash, FaEdit, FaPlus, FaSpinner, FaEye } from 'react-icons/fa';
+import { FaImages, FaVideo, FaUpload, FaTrash, FaEdit, FaPlus, FaSpinner, FaEye, FaTimes } from 'react-icons/fa';
 import { getGalleryItems, uploadGalleryItem, deleteGalleryItem, updateGalleryItem } from '../../api/api';
+import { API_BASE_URL } from '../../config/api';
 
 const GalleryManagement = () => {
   const [galleryItems, setGalleryItems] = useState([]);
@@ -12,6 +13,13 @@ const GalleryManagement = () => {
   const [uploading, setUploading] = useState(false);
   const [filter, setFilter] = useState('all');
   const [previewItem, setPreviewItem] = useState(null);
+
+  const getImageUrl = (path) => {
+    if (path.startsWith('http')) {
+      return path;
+    }
+    return `${API_BASE_URL}${path}`;
+  };
 
   const [formData, setFormData] = useState({
     title: '',
@@ -237,7 +245,7 @@ const GalleryManagement = () => {
             <div className="aspect-square relative bg-gray-100">
               {item.type === 'image' ? (
                 <img
-                  src={item.url}
+                  src={getImageUrl(item.file_path)}
                   alt={item.title}
                   className="w-full h-full object-cover"
                 />
@@ -457,7 +465,7 @@ const GalleryManagement = () => {
             <div className="p-4">
               {previewItem.type === 'image' ? (
                 <img
-                  src={previewItem.url}
+                  src={getImageUrl(previewItem.file_path)}
                   alt={previewItem.title}
                   className="w-full h-auto max-h-96 object-contain"
                 />

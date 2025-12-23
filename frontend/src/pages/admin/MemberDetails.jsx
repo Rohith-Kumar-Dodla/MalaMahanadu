@@ -8,7 +8,7 @@ const MemberDetails = () => {
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
-    // Get member ID from URL
+    // Get member ID from URL - could be numeric or membership_id
     const pathParts = window.location.pathname.split('/');
     const memberId = pathParts[pathParts.length - 1];
     
@@ -25,10 +25,23 @@ const MemberDetails = () => {
   const fetchMemberDetails = async (memberId) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/membership/${memberId}`);
+      // Try both numeric ID and membership ID
+      let response;
+      
+      // First try as membership_id (MMN-2025-000001 format)
+      response = await fetch(`/api/membership/${memberId}`);
+      
+      // If that fails, try as numeric ID
+      if (!response.ok) {
+        response = await fetch(`/api/membership/?id=${memberId}`);
+      }
+      
       if (response.ok) {
         const data = await response.json();
-        setMember(data);
+        // If we got an array, take the first element
+        const member = Array.isArray(data) ? data[0] : data;
+        setMember(member);
+        console.log('Fetched member details:', member);
       } else {
         console.error('Failed to fetch member details');
         // For demo, show sample data
@@ -65,7 +78,14 @@ const MemberDetails = () => {
     
     setActionLoading(true);
     try {
-      const response = await fetch(member.id_card_url);
+      // Use proper URL construction for ID card download
+      const idCardUrl = member.id_card_url.startsWith('http') 
+        ? member.id_card_url 
+        : member.id_card_url.startsWith('/static/')
+          ? `http://localhost:8000${member.id_card_url}`
+          : member.id_card_url;
+          
+      const response = await fetch(idCardUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -110,13 +130,18 @@ const MemberDetails = () => {
     
     setActionLoading(true);
     try {
-      const response = await fetch(`/api/membership/regenerate-idcard/${member.id}`, {
+      const response = await fetch(`/api/membership/${member.id}/regenerate-idcard`, {
         method: 'POST'
       });
       
       if (response.ok) {
+        const data = await response.json();
         alert('ID card regenerated successfully');
-        fetchMemberDetails(member.id); // Refresh member details
+        // Update member with new ID card URL
+        setMember(prev => ({
+          ...prev,
+          id_card_url: data.id_card_url
+        }));
       } else {
         alert('Failed to regenerate ID card');
       }
@@ -239,21 +264,30 @@ const MemberDetails = () => {
               {/* ID Card Preview */}
               {member.id_card_url && (
                 <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
-                  <h3 className="text-lg font-semibold text-primary-900 mb-4">ID Card</h3>
-                  <div className="relative w-full" style={{ paddingBottom: '63%' }}>
+                  <h3 className="text-lg font-semibold text-primary-900 mb-4">ID Card Preview</h3>
+                  <div className="relative w-full">
                     <img
-                      src={member.id_card_url}
+                      src={member.id_card_url.startsWith('http') 
+                        ? member.id_card_url 
+                        : member.id_card_url.startsWith('/static/')
+                          ? `http://localhost:8000${member.id_card_url}`
+                          : member.id_card_url
+                      }
                       alt="ID Card"
-                      className="absolute inset-0 w-full h-full object-contain rounded-lg border border-gray-300 mb-4"
+                      className="w-full h-auto rounded-lg border border-gray-300 mb-4"
                       onError={(e) => {
+                        console.error('Failed to load ID card:', member.id_card_url);
                         e.target.style.display = 'none';
                         e.target.nextSibling.style.display = 'flex';
                       }}
+                      onLoad={() => {
+                        console.log('Successfully loaded ID card for:', member.name);
+                      }}
                     />
-                    <div className="absolute inset-0 w-full h-full bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center" style={{ display: 'none' }}>
+                    <div className="w-full bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center p-8" style={{ display: 'none' }}>
                       <div className="text-center">
                         <FaIdCard className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">ID Card Preview</p>
+                        <p className="text-sm text-gray-500">Failed to load ID Card</p>
                       </div>
                     </div>
                   </div>

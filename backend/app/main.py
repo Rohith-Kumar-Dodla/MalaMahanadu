@@ -63,8 +63,7 @@ app.mount("/assets", CORSSStaticFiles(directory="dist/assets"), name="assets")
 app.mount("/mock-images", CORSSStaticFiles(directory="dist/mock-images"), name="mock-images")
 
 # Mount existing static files
-app.mount("/static", CORSSStaticFiles(directory="app/static"), name="static")
-app.mount("/static/gallery", CORSSStaticFiles(directory="uploads/gallery"), name="gallery")
+app.mount("/static", CORSSStaticFiles(directory="uploads"), name="static")
 app.mount("/static/photos", CORSSStaticFiles(directory="app/static/photos"), name="photos")
 
 # Include routers

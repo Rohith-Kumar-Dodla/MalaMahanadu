@@ -73,7 +73,7 @@ async def register_member(
     caste: str = Form(...),
     aadhar: str = Form(...),
     phone: str = Form(...),
-    email: str = Form(...),
+    email: str = Form(""),
     state: str = Form(...),
     district: str = Form(...),
     mandal: str = Form(...),
@@ -83,15 +83,18 @@ async def register_member(
 ):
     try:
         print(f"Registration attempt for email: {email}, phone: {phone}")
+        print(f"Form data received: fullName={fullName}, fatherName={fatherName}, gender={gender}, dob={dob}, caste={caste}, aadhar={aadhar}, phone={phone}, email={email}, state={state}, district={district}, mandal={mandal}, village={village}, fullAddress={fullAddress}")
+        print(f"Photo received: {photo is not None}")
         
-        # Check if email already exists
-        existing_member = db.query(Member).filter(Member.email == email).first()
-        if existing_member:
-            print(f"Email already exists: {email}")
-            return MembershipRegisterResponse(
-                success=False,
-                message="Email already exists. Please try with a different email address."
-            )
+        # Check if email already exists (only if email is provided)
+        if email:
+            existing_member = db.query(Member).filter(Member.email == email).first()
+            if existing_member:
+                print(f"Email already exists: {email}")
+                return MembershipRegisterResponse(
+                    success=False,
+                    message="Email already exists. Please try with a different email address."
+                )
         
         # Check if phone already exists
         existing_phone = db.query(Member).filter(Member.phone == phone).first()
@@ -175,19 +178,25 @@ async def register_member(
         # Generate ID card with photo if available
         photo_path = None
         if photo_url:
-            # Convert URL to file path
-            photo_path = photo_url.replace("/static/", "app/static/")
+            # Convert URL to absolute file path
+            if photo_url.startswith("/static/photos/"):
+                photo_path = photo_url.replace("/static/", "app/static/")
+            else:
+                # Handle other photo URL formats
+                photo_path = photo_url
         
         id_card_path = generate_id_card(
             membership_id=membership_id,
             name=fullName,
             village=village,
             district=district,
+            phone=phone,
+            state=state,
             photo_path=photo_path
         )
         
         # Update member with ID card URL
-        new_member.id_card_url = f"/static/idcards/{os.path.basename(id_card_path)}"
+        new_member.id_card_url = f"/static/idcards/{os.path.basename(id_card_path)}?t={datetime.now().timestamp()}"
         db.commit()
         
         # Send welcome email (optional)
@@ -301,6 +310,48 @@ async def get_member_stats(db: Session = Depends(get_db)):
         "id_cards_generated": id_cards_generated
     }
 
+@router.post("/{member_id}/regenerate-idcard")
+async def regenerate_id_card(member_id: int, db: Session = Depends(get_db)):
+    """Regenerate ID card for existing member with new format"""
+    member = db.query(Member).filter(Member.id == member_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    
+    try:
+        # Generate new ID card with updated format
+        photo_path = None
+        if member.photo_url:
+            # Convert URL to absolute file path
+            if member.photo_url.startswith("/static/photos/"):
+                photo_path = member.photo_url.replace("/static/", "app/static/")
+            else:
+                # Handle other photo URL formats
+                photo_path = member.photo_url
+        
+        id_card_path = generate_id_card(
+            membership_id=member.membership_id,
+            name=member.name,
+            village=member.village,
+            district=member.district,
+            phone=member.phone,
+            state=member.state,
+            photo_path=photo_path
+        )
+        
+        # Update member with new ID card URL
+        member.id_card_url = f"/static/idcards/{os.path.basename(id_card_path)}?t={datetime.now().timestamp()}"
+        db.commit()
+        
+        return {
+            "success": True,
+            "message": "ID card regenerated successfully",
+            "id_card_url": member.id_card_url
+        }
+        
+    except Exception as e:
+        print(f"Error regenerating ID card: {e}")
+        raise HTTPException(status_code=500, detail="Failed to regenerate ID card")
+
 @router.patch("/{member_id}/status")
 async def update_member_status(
     member_id: int,
@@ -318,3 +369,20 @@ async def update_member_status(
     db.commit()
     
     return {"message": f"Member status updated to {status}"}
+
+@router.get("/verify/{membership_id}")
+async def verify_membership(membership_id: str, db: Session = Depends(get_db)):
+    """Verify membership by scanning QR code - returns membership details"""
+    member = db.query(Member).filter(Member.membership_id == membership_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    
+    return {
+        "success": True,
+        "membership_id": member.membership_id,
+        "name": member.name,
+        "status": member.status,
+        "village": member.village,
+        "district": member.district,
+        "message": f"Valid Member: {member.name} ({member.membership_id})"
+    }

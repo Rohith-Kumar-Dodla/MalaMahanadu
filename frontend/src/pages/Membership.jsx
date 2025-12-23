@@ -87,9 +87,9 @@ const Membership = () => {
       newErrors.phone = 'Please enter a valid 10-digit phone number';
     }
     
-    if (!formData.email.trim()) {
+    if (formData.email && !formData.email.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
     
@@ -146,11 +146,24 @@ const Membership = () => {
         }
       });
       
+      // Debug: Log what's being sent
+      console.log('Form data being sent:', formData);
+      console.log('FormData entries:');
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(key, value);
+      }
+      
       const response = await fetch(`${API_BASE_URL}/api/membership/register`, {
         method: 'POST',
         body: formDataToSend,
         headers: {} // Let browser set Content-Type for FormData
       });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server response:', response.status, errorText);
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
+      }
       
       const result = await response.json();
       
@@ -442,7 +455,7 @@ const Membership = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         <FaEnvelope className="inline mr-1 text-gold-500" />
-                        Email Address *
+                        Email Address
                       </label>
                       <input
                         type="email"

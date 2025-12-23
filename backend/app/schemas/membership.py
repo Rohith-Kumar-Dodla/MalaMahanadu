@@ -10,7 +10,7 @@ class MembershipCreate(BaseModel):
     caste: str
     aadhar: str
     phone: str
-    email: EmailStr
+    email: Optional[EmailStr] = None
     state: str
     district: str
     mandal: str
