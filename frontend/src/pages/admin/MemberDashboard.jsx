@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../../config/api';
 import { getMembers, getMemberStats, updateMemberStatus } from '../../api/api';
 import SeoHead from '../../components/SeoHead';
 import { FaUsers, FaSearch, FaDownload, FaEye, FaEnvelope, FaIdCard, FaFilter, FaSignOutAlt, FaSpinner, FaTimes, FaCheck } from 'react-icons/fa';
+import QRCode from 'qrcode';
 
 const MemberDashboard = () => {
   const [members, setMembers] = useState([]);
@@ -21,6 +22,7 @@ const MemberDashboard = () => {
     subject: '',
     body: ''
   });
+  const [qrCodeDataURL, setQrCodeDataURL] = useState('');
 
   useEffect(() => {
     // Check if admin is logged in
@@ -152,9 +154,27 @@ const MemberDashboard = () => {
     window.location.href = '/admin/login';
   };
 
-  const handleViewMember = (memberId) => {
+  const handleViewMember = async (memberId) => {
     const member = members.find(m => m.id === memberId);
     setSelectedMember(member);
+    
+    // Generate QR code for membership ID
+    if (member?.membership_id) {
+      try {
+        const qrDataURL = await QRCode.toDataURL(member.membership_id, {
+          width: 150,
+          margin: 1,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        });
+        setQrCodeDataURL(qrDataURL);
+      } catch (error) {
+        console.error('Error generating QR code:', error);
+        setQrCodeDataURL(''); // Fallback to no QR code
+      }
+    }
   };
 
   const handleSendEmail = (member) => {
@@ -335,7 +355,16 @@ const MemberDashboard = () => {
       });
 
       // For CORS images, we'll skip canvas conversion and let html2canvas handle them
+      const imageLoadPromises = [];
+      
       clonedImages.forEach((img, index) => {
+        // Skip QR code images - they're already data URLs and shouldn't be modified
+        if (img.alt === 'Membership QR Code' || (img.src && img.src.startsWith('data:image/png'))) {
+          img.style.display = 'block';
+          img.style.visibility = 'visible';
+          return;
+        }
+        
         const originalImg = idCardElement.querySelectorAll('img')[index];
         let imageUrl = '';
         
@@ -347,28 +376,8 @@ const MemberDashboard = () => {
               : `${API_BASE_URL}${selectedMember.photo_url}`;
         }
         
-        // For CORS images, now that CORS is fixed, we can use them
-        if (imageUrl.includes('api.malamahanadu.org')) {
-          img.src = `${imageUrl}&t=${Date.now()}`;
-          img.style.display = 'block';
-          // Hide fallback avatar
-          const parent = img.parentElement;
-          if (parent) {
-            const fallback = parent.querySelector('.fallback-avatar');
-            if (fallback) {
-              fallback.style.display = 'none';
-            }
-          }
-        } else if (imageUrl.startsWith('data:')) {
-          // Data URLs are safe to use
-          img.src = `${imageUrl}&t=${Date.now()}`;
-          img.style.display = 'block';
-        } else if (imageUrl.startsWith('/mock-images/') || imageUrl.startsWith('/assets/')) {
-          // Local assets are safe
-          img.src = `${imageUrl}&t=${Date.now()}`;
-          img.style.display = 'block';
-        } else {
-          // Other images or no photo, show fallback avatar
+        if (!imageUrl) {
+          // No image URL, show fallback avatar
           img.style.display = 'none';
           const parent = img.parentElement;
           if (parent) {
@@ -377,11 +386,65 @@ const MemberDashboard = () => {
               fallback.style.display = 'flex';
             }
           }
+          return;
         }
+        
+        // Set crossOrigin before setting src for remote images
+        if (imageUrl.includes('api.malamahanadu.org')) {
+          img.crossOrigin = 'anonymous';
+        }
+        
+        // Construct proper URL with cache busting
+        let finalUrl = imageUrl;
+        if (imageUrl.startsWith('data:')) {
+          // Data URLs don't need cache busting
+          finalUrl = imageUrl;
+        } else if (imageUrl.includes('?')) {
+          // URL already has query params
+          finalUrl = `${imageUrl}&t=${Date.now()}`;
+        } else {
+          // URL needs query param
+          finalUrl = `${imageUrl}?t=${Date.now()}`;
+        }
+        
+        // Wait for image to load
+        const loadPromise = new Promise((resolve) => {
+          img.onload = () => {
+            img.style.display = 'block';
+            img.style.visibility = 'visible';
+            // Hide fallback avatar
+            const parent = img.parentElement;
+            if (parent) {
+              const fallback = parent.querySelector('.fallback-avatar');
+              if (fallback) {
+                fallback.style.display = 'none';
+              }
+            }
+            resolve();
+          };
+          img.onerror = () => {
+            console.error('Failed to load image:', finalUrl);
+            img.style.display = 'none';
+            // Show fallback avatar
+            const parent = img.parentElement;
+            if (parent) {
+              const fallback = parent.querySelector('.fallback-avatar');
+              if (fallback) {
+                fallback.style.display = 'flex';
+              }
+            }
+            resolve();
+          };
+          img.src = finalUrl;
+        });
+        
+        imageLoadPromises.push(loadPromise);
       });
       
-      // Wait a moment for any remaining images to render
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait for all images to load
+      await Promise.all(imageLoadPromises);
+      // Extra wait to ensure rendering is complete
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       const html2canvas = (await import('html2canvas')).default;
       const canvas = await html2canvas(clonedElement, {
@@ -1160,10 +1223,28 @@ const MemberDashboard = () => {
                         </div>
                       </div>
                       
-                      <div className="mt-4 pt-4 border-t text-center">
-                        <p className="text-xs text-gray-500">
-                          Valid from: {new Date(selectedMember.created_at).toLocaleDateString()}
-                        </p>
+                      <div className="mt-4 pt-4 border-t">
+                        <div className="flex justify-between items-center">
+                          <div className="flex-1">
+                            <p className="text-xs text-gray-500">
+                              Valid from:
+                            </p>
+                            <p className="text-xs text-gray-600 font-medium">
+                              {new Date(selectedMember.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          {qrCodeDataURL && (
+                            <div className="flex flex-col items-center">
+                              <img 
+                                src={qrCodeDataURL} 
+                                alt="Membership QR Code" 
+                                className="w-16 h-16"
+                                style={{ imageRendering: 'pixelated' }}
+                              />
+                              <p className="text-xs text-gray-500 mt-1">Scan for ID</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

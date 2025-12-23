@@ -1,7 +1,45 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { API_BASE_URL } from '../config/api';
 import SeoHead from '../components/SeoHead';
 import { FaUserFriends, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCheckCircle, FaSpinner, FaCamera, FaIdCard, FaCalendarAlt, FaUser, FaVenusMars } from 'react-icons/fa';
+
+// State, District, and Mandal data
+const locationData = {
+  "Telangana": {
+    "Adilabad": ["Adilabad", "Bazarhatnoor", "Bela", "Bhainsa", "Boath", "Gudihatnoor", "Ichoda", "Jainath", "Kerameri", "Kouthala", "Kubeer", "Luxettipet", "Mudhole", "Narnoor", "Nirmal", "Tamsi", "Tandur", "Utnoor", "Vemanpalle"],
+    "Bhadradri Kothagudem": ["Kothagudem", "Manuguru", "Yellandu", "Burgampahad", "Chandrugonda", "Aswaraopeta", "Palwancha", "Dammapeta", "Chunchupalle", "Julurpad", "Sujathanagar", "Karakagudem", "Gundala", "Tekulapalle"],
+    "Hyderabad": ["Charminar", "Khairatabad", "Kukatpally", "LB Nagar", "Secunderabad", "Serilingampally"],
+    "Jagtial": ["Jagtial", "Dharmapuri", "Gollapalle", "Ibrahimpatnam", "Kathlapur", "Koratla", "Mallapur", "Mallial", "Medipalle", "Metpalle", "Pegadapalle", "Raikal", "Sarangapur", "Velgatoor"],
+    "Jangaon": ["Jangaon", "Bachannapet", "Chilpur", "Devaruppula", "Kodakandla", "Lingalaghanpur", "Narmetta", "Palakurthi", "Raghunathpalle", "Tharigoppula", "Zaffergadh"],
+    "Jayashankar Bhupalpally": ["Bhupalpally", "Chityal", "Ghanapur Station", "Kataram", "Mahadevpur", "Malharrao", "Mogullapalle", "Mutharam", "Tekumatla", "Toguta", "Regonda"],
+    "Jogulamba Gadwal": ["Gadwal", "Alampur", "Atmakur", "Dharur", "Ghattu", "Ieeja", "Itikyal", "Kaloor", "Maddur", "Maldakal", "Rajoli", "Undavelly", "Waddepalle"],
+    "Kamareddy": ["Kamareddy", "Banswada", "Bhiknoor", "Bichkunda", "Domakonda", "Jukkal", "Lingampet", "Machareddy", "Madnoor", "Nagireddipet", "Nizamsagar", "Pedda Kodapgal", "Rajampet", "Sadashivanagar", "Tadwai", "Yellareddy"],
+    "Karimnagar": ["Karimnagar", "Choppadandi", "Ellanthakunta", "Gangadhara", "Ganneruvaram", "Huzurabad", "Jammikunta", "Kothapalle", "Manakondur", "Raikal", "Ramadugu", "Saidapur", "Shankarapatnam", "Thimmapur", "Veenavanka", "Vemulawada"],
+    "Khammam": ["Khammam Urban", "Khammam Rural", "Chintakani", "Enkoor", "Kallur", "Kamepalle", "Kusumanchi", "Madhira", "Mudigonda", "Nelakondapalle", "Penuballi", "Raghunadhapalem", "Sathupalle", "Singareni", "Thirumalayapalem", "Tirumalayapalem", "Vemsoor", "Wyra", "Yerrupalem"],
+    "Komaram Bheem": ["Asifabad", "Dahegaon", "Jannaram", "Kagaznagar", "Kerameri", "Lingapur", "Penchikalpet", "Rebbena", "Sirpur", "Tiryani"],
+    "Mahabubabad": ["Mahabubabad", "Bayyaram", "Chinnagudur", "Danthalapalle", "Dornakal", "Garla", "Gudur", "Kothaguda", "Kuravi", "Maripeda", "Narsimhulapet", "Nellikudur", "Thorrur"],
+    "Mahbubnagar": ["Mahbubnagar", "Addakal", "Amangal", "Balanagar", "Chinna Chintakunta", "Dhanwada", "Gandeed", "Hanwada", "Jadcherla", "Kalwakurthy", "Koilkonda", "Kothakota", "Midjil", "Mohammadabad", "Narayanpet", "Nawabpet", "Peddakothapalle", "Rajapur", "Shadnagar", "Tadoor", "Thimmajipet", "Urkonda", "Wanaparthy"],
+    "Mancherial": ["Mancherial", "Bellampalle", "Bheemini", "Chennur", "Hajipur", "Jaipur", "Kannepalle", "Kasipet", "Kotapalle", "Luxettipet", "Mandamarri", "Naspur", "Nennel", "Tandur", "Vemulawada"],
+    "Medak": ["Medak", "Alladurg", "Chegunta", "Chilipet", "Dubbak", "Gajwel", "Hathnoora", "Havelighanpur", "Kondapak", "Kulcharam", "Manoharabad", "Narayankhed", "Narsapur", "Papannapet", "Ramayampet", "Regode", "Shivampet", "Siddipet", "Shankarampet", "Tekmal", "Toopran", "Yelgoi", "Zaheerabad"],
+    "Medchal-Malkajgiri": ["Medchal", "Malkajgiri", "Alwal", "Bachupally", "Ghatkesar", "Kapra", "Keesara", "Kukatpally", "Quthbullapur", "Shamirpet", "Uppal"],
+    "Mulugu": ["Mulugu", "Eturnagaram", "Govindaraopet", "Kannaigudem", "Mangapet", "Venkatapur", "Venkatapuram", "Wajedu", "Wazeed"],
+    "Nagarkurnool": ["Nagarkurnool", "Achampet", "Amrabad", "Bijinapalle", "Choudur", "Kalwakurthy", "Kodair", "Kollapur", "Lingal", "Padara", "Peddakothapalle", "Tadoor", "Telkapalle", "Thimmajipet", "Urkonda", "Vangoor"],
+    "Nalgonda": ["Nalgonda", "Alair", "Anumula", "Atmakur", "Bhongir", "Chandur", "Chivvemla", "Dameracherla", "Devarakonda", "Gundlapalle", "Kangal", "Kattangoor", "Marriguda", "Miryalaguda", "Munugode", "Nakrekal", "Nampalle", "Narketpalle", "Neredcherla", "Nidamanur", "Peddavoora", "Ramannapet", "Sali Gouraram", "Thipparthi", "Thripuraram", "Yadagirigutta"],
+    "Narayanpet": ["Narayanpet", "Damaragidda", "Dhanwada", "Kosgi", "Maddur", "Maganoor", "Makthal", "Marikal", "Narva", "Utkoor"],
+    "Nirmal": ["Nirmal", "Basar", "Bhainsa", "Dasturabad", "Dilawarpur", "Kaddipet", "Khanapur", "Kubeer", "Laxmanchanda", "Mamda", "Mendora", "Narsapur", "Sarangapur", "Tanur", "Umri"],
+    "Nizamabad": ["Nizamabad Urban", "Nizamabad Rural", "Armoor", "Bheemgal", "Bichkunda", "Bodhan", "Dichpalle", "Indalwai", "Jakranpalli", "Kamareddy", "Kotagiri", "Makloor", "Mendora", "Mortad", "Mudhole", "Nandipet", "Navipet", "Renjal", "Rudrur", "Sirkonda", "Varni", "Velpur", "Yedapalle"],
+    "Peddapalli": ["Peddapalli", "Anthergaon", "Dharmaram", "Eligaid", "Julapalle", "Kamanpur", "Manthani", "Mutharam", "Odela", "Ramagiri", "Ramagundam", "Srirampur", "Sultanabad"],
+    "Rajanna Sircilla": ["Sircilla", "Boinpalle", "Chandurthi", "Ellanthakunta", "Gambhiraopet", "Koheda", "Konaraopet", "Mustabad", "Navipet", "Rudrangi", "Thandur", "Thangallapalle", "Veenavanka", "Vemulawada", "Yellareddipet"],
+    "Rangareddy": ["Chevella", "Ibrahimpatnam", "Kandukur", "Keshampet", "Manchal", "Marpalle", "Moinabad", "Rajendranagar", "Saroornagar", "Serilingampally", "Shamshabad", "Shankarpalle", "Vicarabad", "Yacharam"],
+    "Sangareddy": ["Sangareddy", "Ameenpur", "Andole", "Arrival", "Gummadidala", "Hathnoora", "Jharasangam", "Jinnaram", "Kandi", "Kohir", "Kondapur", "Munipalle", "Narayankhed", "Nyalkal", "Patancheru", "Pulkal", "Sadasivpet", "Tupran", "Zaheerabad"],
+    "Suryapet": ["Suryapet", "Atmakur", "Cheryala", "Chinthalapalem", "Garidepalle", "Huzurnagar", "Jajireddigudem", "Kodad", "Mattampalle", "Mellachervu", "Mothkur", "Munagala", "Nagaram", "Neredcherla", "Nuthankal", "Penpahad", "Thungathurthy"],
+    "Vikarabad": ["Vikarabad", "Bantwaram", "Basheerabad", "Bomraspet", "Doma", "Doulatabad", "Dharur", "Kodangal", "Kulkacharla", "Marpalle", "Mogudampalle", "Pargi", "Peddemul", "Tandur", "Yalal"],
+    "Wanaparthy": ["Wanaparthy", "Amangal", "Atmakur", "Bhoothpur", "Chinnambavi", "Gopalpet", "Kothakota", "Madanapur", "Pangal", "Pebbair", "Peddamandadi", "Revally", "Srirangapur", "Veepangandla", "Weepangandla"],
+    "Warangal Rural": ["Warangal Rural", "Atmakur", "Chennaraopet", "Damera", "Duggondi", "Geesugonda", "Khanapur", "Nallabelly", "Narsampet", "Parkal", "Parvathagiri", "Rayaparthy", "Sangem", "Shayampet", "Wardhannapet"],
+    "Warangal Urban": ["Warangal", "Hanamkonda", "Elkathurthy", "Ghanpur", "Hasanparthy", "Inavolu", "Jangaon", "Kamalapur", "Karupur", "Mahabubabad", "Nekkonda", "Palakurthy", "Raiparthy", "Thorrur", "Wardhannapet", "Zaffergadh"],
+    "Yadadri Bhuvanagiri": ["Bhuvanagiri", "Alair", "Atmakur", "Bhongir", "Bibinagar", "Choutuppal", "Gundala", "Mothkur", "Ramannapet", "Thurkapalle", "Valigonda", "Yadagirigutta"]
+  }
+};
 
 const Membership = () => {
   const [formData, setFormData] = useState({
@@ -23,9 +61,65 @@ const Membership = () => {
   const [errors, setErrors] = useState({});
   const [photoPreview, setPhotoPreview] = useState(null);
   const fileInputRef = useRef(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [availableDistricts, setAvailableDistricts] = useState([]);
+  const [availableMandals, setAvailableMandals] = useState([]);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [stream, setStream] = useState(null);
+
+  // Handle video stream when camera opens
+  useEffect(() => {
+    if (stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.play().catch(err => console.error('Error playing video:', err));
+    }
+  }, [stream]);
+
+  // Cleanup camera stream on unmount
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [stream]);
+
+  // Real-time input handlers with strict validations
+  const handleNameInput = (e, field) => {
+    const value = e.target.value;
+    // Only allow letters and spaces
+    if (value === '' || /^[a-zA-Z\s]+$/.test(value)) {
+      setFormData({ ...formData, [field]: value });
+    }
+  };
+
+  const handleAddressInput = (e, field) => {
+    const value = e.target.value;
+    // Only allow letters, numbers, spaces, comma, period, hyphen
+    if (value === '' || /^[a-zA-Z0-9\s,.-]+$/.test(value)) {
+      setFormData({ ...formData, [field]: value });
+    }
+  };
+
+  const handlePhoneInput = (e) => {
+    const value = e.target.value.replace(/\s/g, '');
+    // Only allow numbers and max 10 digits
+    if (value === '' || (/^\d+$/.test(value) && value.length <= 10)) {
+      setFormData({ ...formData, phone: value });
+    }
+  };
+
+  const handleAadharInput = (e) => {
+    const value = e.target.value.replace(/\s/g, '');
+    // Only allow numbers and max 12 digits
+    if (value === '' || (/^\d+$/.test(value) && value.length <= 12)) {
+      setFormData({ ...formData, aadhar: value });
+    }
+  };
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -47,16 +141,126 @@ const Membership = () => {
     }
   };
 
+  const openCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      });
+      setStream(mediaStream);
+      setIsCameraOpen(true);
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      alert('Unable to access camera. Please make sure you have granted camera permissions.');
+    }
+  };
+
+  const closeCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    setIsCameraOpen(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      
+      const context = canvas.getContext('2d');
+      // Draw the current video frame to canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Get the image as data URL first
+      const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      setPhotoPreview(imageDataUrl);
+      
+      // Convert to blob and create file
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const file = new File([blob], 'captured-photo.jpg', { type: 'image/jpeg' });
+          setFormData({ ...formData, photo: file });
+        }
+      }, 'image/jpeg', 0.9);
+      
+      // Close camera after capturing
+      closeCamera();
+    }
+  };
+
+  const handleStateChange = (e) => {
+    const selectedState = e.target.value;
+    setFormData({
+      ...formData,
+      state: selectedState,
+      district: '',
+      mandal: ''
+    });
+    
+    if (selectedState && locationData[selectedState]) {
+      setAvailableDistricts(Object.keys(locationData[selectedState]));
+      setAvailableMandals([]);
+    } else {
+      setAvailableDistricts([]);
+      setAvailableMandals([]);
+    }
+  };
+
+  const handleDistrictChange = (e) => {
+    const selectedDistrict = e.target.value;
+    setFormData({
+      ...formData,
+      district: selectedDistrict,
+      mandal: ''
+    });
+    
+    if (selectedDistrict && formData.state && locationData[formData.state][selectedDistrict]) {
+      setAvailableMandals(locationData[formData.state][selectedDistrict]);
+    } else {
+      setAvailableMandals([]);
+    }
+  };
+
+  const validateName = (name, fieldName) => {
+    // Only allow letters and spaces
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    if (!name.trim()) {
+      return `${fieldName} is required`;
+    }
+    if (!nameRegex.test(name)) {
+      return `${fieldName} should only contain letters and spaces`;
+    }
+    return null;
+  };
+
+  const validateAddress = (address, fieldName) => {
+    // Allow letters, numbers, spaces, comma, period, hyphen
+    const addressRegex = /^[a-zA-Z0-9\s,.-]+$/;
+    if (!address.trim()) {
+      return `${fieldName} is required`;
+    }
+    if (!addressRegex.test(address)) {
+      return `${fieldName} should only contain letters, numbers, spaces, comma, period, and hyphen`;
+    }
+    return null;
+  };
+
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    }
+    const fullNameError = validateName(formData.fullName, 'Full name');
+    if (fullNameError) newErrors.fullName = fullNameError;
     
-    if (!formData.fatherName.trim()) {
-      newErrors.fatherName = 'Father\'s/Husband name is required';
-    }
+    const fatherNameError = validateName(formData.fatherName, "Father's/Husband's name");
+    if (fatherNameError) newErrors.fatherName = fatherNameError;
     
     if (!formData.gender) {
       newErrors.gender = 'Gender is required';
@@ -71,7 +275,7 @@ const Membership = () => {
       }
     }
     
-    if (!formData.caste.trim()) {
+    if (!formData.caste) {
       newErrors.caste = 'Caste is required';
     }
     
@@ -93,25 +297,23 @@ const Membership = () => {
       newErrors.email = 'Please enter a valid email address';
     }
     
-    if (!formData.state.trim()) {
+    if (!formData.state) {
       newErrors.state = 'State is required';
     }
     
-    if (!formData.district.trim()) {
+    if (!formData.district) {
       newErrors.district = 'District is required';
     }
     
-    if (!formData.mandal.trim()) {
+    if (!formData.mandal) {
       newErrors.mandal = 'Mandal is required';
     }
     
-    if (!formData.village.trim()) {
-      newErrors.village = 'Village is required';
-    }
+    const villageError = validateAddress(formData.village, 'Village');
+    if (villageError) newErrors.village = villageError;
     
-    if (!formData.fullAddress.trim()) {
-      newErrors.fullAddress = 'Full address is required';
-    }
+    const addressError = validateAddress(formData.fullAddress, 'Full address');
+    if (addressError) newErrors.fullAddress = addressError;
     
     if (!formData.photo) {
       newErrors.photo = 'Photo is required';
@@ -307,11 +509,11 @@ const Membership = () => {
                         type="text"
                         name="fullName"
                         value={formData.fullName}
-                        onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                        onChange={(e) => handleNameInput(e, 'fullName')}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
                           errors.fullName ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Enter your full name"
+                        placeholder="Enter your full name (letters only)"
                       />
                       {errors.fullName && (
                         <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
@@ -326,11 +528,11 @@ const Membership = () => {
                         type="text"
                         name="fatherName"
                         value={formData.fatherName}
-                        onChange={(e) => setFormData({...formData, fatherName: e.target.value})}
+                        onChange={(e) => handleNameInput(e, 'fatherName')}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
                           errors.fatherName ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Enter father's or husband's name"
+                        placeholder="Enter father's or husband's name (letters only)"
                       />
                       {errors.fatherName && (
                         <p className="mt-1 text-sm text-red-600">{errors.fatherName}</p>
@@ -389,11 +591,11 @@ const Membership = () => {
                         type="text"
                         name="caste"
                         value={formData.caste}
-                        onChange={(e) => setFormData({...formData, caste: e.target.value})}
+                        onChange={(e) => handleNameInput(e, 'caste')}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
                           errors.caste ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Enter your caste"
+                        placeholder="Enter your caste (letters only)"
                       />
                       {errors.caste && (
                         <p className="mt-1 text-sm text-red-600">{errors.caste}</p>
@@ -410,12 +612,12 @@ const Membership = () => {
                         type="text"
                         name="aadhar"
                         value={formData.aadhar}
-                        onChange={(e) => setFormData({...formData, aadhar: e.target.value})}
+                        onChange={handleAadharInput}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
                           errors.aadhar ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="1234 5678 9012"
-                        maxLength={14}
+                        placeholder="123456789012 (12 digits only)"
+                        maxLength={12}
                       />
                       {errors.aadhar && (
                         <p className="mt-1 text-sm text-red-600">{errors.aadhar}</p>
@@ -441,11 +643,12 @@ const Membership = () => {
                         type="tel"
                         name="phone"
                         value={formData.phone}
-                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        onChange={handlePhoneInput}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
                           errors.phone ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="98765 43210"
+                        placeholder="9876543210 (10 digits only)"
+                        maxLength={10}
                       />
                       {errors.phone && (
                         <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
@@ -489,17 +692,15 @@ const Membership = () => {
                       <select
                         name="state"
                         value={formData.state}
-                        onChange={(e) => setFormData({...formData, state: e.target.value})}
+                        onChange={handleStateChange}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
                           errors.state ? 'border-red-500' : 'border-gray-300'
                         }`}
                       >
                         <option value="">Select state</option>
-                        <option value="Telangana">Telangana</option>
-                        <option value="Andhra Pradesh">Andhra Pradesh</option>
-                        <option value="Karnataka">Karnataka</option>
-                        <option value="Tamil Nadu">Tamil Nadu</option>
-                        <option value="Maharashtra">Maharashtra</option>
+                        {Object.keys(locationData).map((state) => (
+                          <option key={state} value={state}>{state}</option>
+                        ))}
                       </select>
                       {errors.state && (
                         <p className="mt-1 text-sm text-red-600">{errors.state}</p>
@@ -510,18 +711,25 @@ const Membership = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         District *
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="district"
                         value={formData.district}
-                        onChange={(e) => setFormData({...formData, district: e.target.value})}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
+                        onChange={handleDistrictChange}
+                        disabled={!formData.state}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${
                           errors.district ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Enter your district"
-                      />
+                      >
+                        <option value="">Select district</option>
+                        {availableDistricts.map((district) => (
+                          <option key={district} value={district}>{district}</option>
+                        ))}
+                      </select>
                       {errors.district && (
                         <p className="mt-1 text-sm text-red-600">{errors.district}</p>
+                      )}
+                      {!formData.state && (
+                        <p className="mt-1 text-sm text-gray-500">Please select a state first</p>
                       )}
                     </div>
                   </div>
@@ -531,18 +739,25 @@ const Membership = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Mandal *
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="mandal"
                         value={formData.mandal}
                         onChange={(e) => setFormData({...formData, mandal: e.target.value})}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
+                        disabled={!formData.district}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${
                           errors.mandal ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Enter your mandal"
-                      />
+                      >
+                        <option value="">Select mandal</option>
+                        {availableMandals.map((mandal) => (
+                          <option key={mandal} value={mandal}>{mandal}</option>
+                        ))}
+                      </select>
                       {errors.mandal && (
                         <p className="mt-1 text-sm text-red-600">{errors.mandal}</p>
+                      )}
+                      {!formData.district && (
+                        <p className="mt-1 text-sm text-gray-500">Please select a district first</p>
                       )}
                     </div>
                     
@@ -554,7 +769,7 @@ const Membership = () => {
                         type="text"
                         name="village"
                         value={formData.village}
-                        onChange={(e) => setFormData({...formData, village: e.target.value})}
+                        onChange={(e) => handleAddressInput(e, 'village')}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
                           errors.village ? 'border-red-500' : 'border-gray-300'
                         }`}
@@ -573,7 +788,7 @@ const Membership = () => {
                     <textarea
                       name="fullAddress"
                       value={formData.fullAddress}
-                      onChange={(e) => setFormData({...formData, fullAddress: e.target.value})}
+                      onChange={(e) => handleAddressInput(e, 'fullAddress')}
                       rows={3}
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
                         errors.fullAddress ? 'border-red-500' : 'border-gray-300'
@@ -594,7 +809,33 @@ const Membership = () => {
                   </h3>
                   
                   <div className="flex flex-col items-center">
-                    {photoPreview ? (
+                    {isCameraOpen ? (
+                      <div className="mb-4">
+                        <video
+                          ref={videoRef}
+                          autoPlay
+                          playsInline
+                          className="w-80 h-80 object-cover rounded-lg border-2 border-gold-500"
+                        />
+                        <canvas ref={canvasRef} className="hidden" />
+                        <div className="flex gap-3 mt-4 justify-center">
+                          <button
+                            type="button"
+                            onClick={capturePhoto}
+                            className="bg-gold-500 hover:bg-gold-600 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+                          >
+                            Capture Photo
+                          </button>
+                          <button
+                            type="button"
+                            onClick={closeCamera}
+                            className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : photoPreview ? (
                       <div className="mb-4">
                         <img
                           src={photoPreview}
@@ -615,24 +856,39 @@ const Membership = () => {
                       </div>
                     )}
                     
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoChange}
-                      className="hidden"
-                    />
-                    
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="bg-gold-500 hover:bg-gold-600 text-white font-medium py-2 px-6 rounded-lg transition-colors"
-                    >
-                      Choose Photo
-                    </button>
+                    {!isCameraOpen && !photoPreview && (
+                      <>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handlePhotoChange}
+                          className="hidden"
+                        />
+                        
+                        <div className="flex gap-3">
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="bg-gold-500 hover:bg-gold-600 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+                          >
+                            Choose Photo
+                          </button>
+                          
+                          <button
+                            type="button"
+                            onClick={openCamera}
+                            className="bg-primary-900 hover:bg-primary-800 text-white font-medium py-2 px-6 rounded-lg transition-colors flex items-center"
+                          >
+                            <FaCamera className="mr-2" />
+                            Capture Photo
+                          </button>
+                        </div>
+                      </>
+                    )}
                     
                     <p className="mt-2 text-sm text-gray-600">
-                      Upload a clear photo (Max size: 5MB)
+                      Upload or capture a clear photo (Max size: 5MB)
                     </p>
                     
                     {errors.photo && (
