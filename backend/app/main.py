@@ -59,8 +59,8 @@ class CORSSStaticFiles(StaticFiles):
         await super().__call__(scope, receive, send_wrapper)
 
 # Mount frontend static files
-app.mount("/assets", CORSSStaticFiles(directory="dist/assets"), name="assets")
-app.mount("/mock-images", CORSSStaticFiles(directory="dist/mock-images"), name="mock-images")
+app.mount("/assets", CORSSStaticFiles(directory="app/static/dist/assets"), name="assets")
+app.mount("/mock-images", CORSSStaticFiles(directory="app/static/dist/mock-images"), name="mock-images")
 
 # Mount existing static files
 app.mount("/static", CORSSStaticFiles(directory="uploads"), name="static")
@@ -74,7 +74,7 @@ app.include_router(gallery.router, prefix="/api/gallery", tags=["gallery"])
 
 @app.get("/")
 async def root():
-    return FileResponse("dist/index.html", media_type="text/html")
+    return FileResponse("app/static/dist/index.html", media_type="text/html")
 
 @app.get("/health")
 async def health_check():
@@ -88,7 +88,7 @@ async def spa_fallback(path: str):
         raise HTTPException(status_code=404, detail="Not found")
     
     # For all other routes, serve the SPA index.html
-    return FileResponse("dist/index.html", media_type="text/html")
+    return FileResponse("app/static/dist/index.html", media_type="text/html")
 
 if __name__ == "__main__":
     import uvicorn
