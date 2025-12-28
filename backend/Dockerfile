@@ -18,8 +18,8 @@ COPY . .
 RUN mkdir -p app/static/photos app/static/idcards
 
 # Set proper permissions for static files
-RUN chmod -R 755 dist/
-RUN find dist/ -type f -exec chmod 644 {} \;
+# RUN chmod -R 755 dist/
+# RUN find dist/ -type f -exec chmod 644 {} \;
 
 EXPOSE 8000
 

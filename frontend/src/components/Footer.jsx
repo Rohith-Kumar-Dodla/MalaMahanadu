@@ -112,7 +112,7 @@ const Footer = () => {
                 <FaPhone className="h-3 w-3 xs:h-4 xs:w-4 sm:h-5 sm:w-5 text-primary-500 mt-0.5 xs:mt-0.5 sm:mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-secondary-300 text-xs xs:text-sm sm:text-sm">Phone</p>
-                  <p className="text-white text-xs xs:text-sm sm:text-sm">+91 98765 43210</p>
+                  <p className="text-white text-xs xs:text-sm sm:text-sm">+91 63039 77720</p>
                 </div>
               </div>
               <div className="flex items-start space-x-2 xs:space-x-2 sm:space-x-3">
@@ -126,7 +126,9 @@ const Footer = () => {
                 <FaMapMarkerAlt className="h-3 w-3 xs:h-4 xs:w-4 sm:h-5 sm:w-5 text-primary-500 mt-0.5 xs:mt-0.5 sm:mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-secondary-300 text-xs xs:text-sm sm:text-sm">Address</p>
-                  <p className="text-white text-xs xs:text-sm sm:text-sm">Hyderabad, Telangana, India</p>
+                  <p className="text-white text-xs xs:text-sm sm:text-sm">8-2-682-32/125, Road No. 13,</p>
+                  <p className="text-white text-xs xs:text-sm sm:text-sm">Opp: Ministers Quarters, Banjara Hills,</p>
+                  <p className="text-white text-xs xs:text-sm sm:text-sm">Hyderabad – 500034</p>
                 </div>
               </div>
             </div>
