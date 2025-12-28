@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaUsers, FaHandHoldingHeart, FaNewspaper, FaImages, FaPhone, FaArrowRight, FaCalendarAlt, FaMapMarkerAlt, FaUserCircle } from 'react-icons/fa';
 import Hero from '../components/Hero';
+import BannerSlideshow from '../components/BannerSlideshow';
 import SeoHead from '../components/SeoHead';
 import Testimonials from '../components/Testimonials';
 import { getSettings } from '../api/mockApi';
@@ -115,8 +116,11 @@ const Home = () => {
         keywords="Mala Mahanadu, community, social justice, education, empowerment, Telangana"
       />
       
+
       <Hero />
 
+      {/* Image Banner Auto Slider */}
+      <BannerSlideshow />
       
       {/* About the Mala Community Section */}
       <section className="py-8 xs:py-12 sm:py-16 bg-white">

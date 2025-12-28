@@ -241,18 +241,6 @@ const Membership = () => {
     return null;
   };
 
-  const validateAddress = (address, fieldName) => {
-    // Allow letters, numbers, spaces, comma, period, hyphen
-    const addressRegex = /^[a-zA-Z0-9\s,.-]+$/;
-    if (!address.trim()) {
-      return `${fieldName} is required`;
-    }
-    if (!addressRegex.test(address)) {
-      return `${fieldName} should only contain letters, numbers, spaces, comma, period, and hyphen`;
-    }
-    return null;
-  };
-
   const validateForm = () => {
     const newErrors = {};
     
@@ -308,12 +296,6 @@ const Membership = () => {
     if (!formData.mandal) {
       newErrors.mandal = 'Mandal is required';
     }
-    
-    const villageError = validateAddress(formData.village, 'Village');
-    if (villageError) newErrors.village = villageError;
-    
-    const addressError = validateAddress(formData.fullAddress, 'Full address');
-    if (addressError) newErrors.fullAddress = addressError;
     
     if (!formData.photo) {
       newErrors.photo = 'Photo is required';
@@ -763,7 +745,7 @@ const Membership = () => {
                     
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Village *
+                        Village
                       </label>
                       <input
                         type="text"
@@ -783,7 +765,7 @@ const Membership = () => {
 
                   <div className="mt-6">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Address *
+                      Full Address
                     </label>
                     <textarea
                       name="fullAddress"
